@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nova Nexus | Design Studio</title>
+    <title>Nova Nexus | Dizayn Studiya</title>
     <link rel="icon" href="photo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -19,19 +19,39 @@
         .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 85px; display: flex; justify-content: space-around; align-items: center; background: rgba(5,7,10,0.95); backdrop-filter: blur(15px); border-top: 1px solid rgba(255,255,255,0.05); z-index: 1000; }
         .nav-btn { color: #4b5563; display: flex; flex-direction: column; align-items: center; transition: 0.3s; cursor: pointer; }
         .nav-btn.active { color: var(--p); transform: translateY(-5px); }
+        /* AI Tugmasi va Chat */
+        #ai-btn { position: fixed; right: 20px; bottom: 100px; width: 60px; height: 60px; background: linear-gradient(45deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; items-center; justify-content: center; z-index: 2000; box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); cursor: pointer; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        #ai-chat { position: fixed; inset: 0; background: var(--bg); z-index: 3000; display: none; flex-direction: column; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
     <div id="toast">Xabar</div>
 
+    <div id="ai-btn" onclick="toggleAI()"><i class="fas fa-robot text-white text-2xl"></i></div>
+
+    <div id="ai-chat" class="p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-black italic uppercase">Nova AI_</h2>
+            <button onclick="toggleAI()" class="w-10 h-10 glass rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="chat-box" class="flex-1 overflow-y-auto glass rounded-3xl p-4 mb-4 space-y-4">
+            <div class="bg-blue-600/20 p-3 rounded-2xl rounded-tl-none text-xs">Salom! Men Nova Nexus sun'iy intellektiman. Sizga qanday yordam bera olaman?</div>
+        </div>
+        <div class="flex gap-2">
+            <input id="ai-input" type="text" class="flex-1 bg-white/5 border border-white/10 p-4 rounded-2xl outline-none" placeholder="Savolingizni yozing...">
+            <button onclick="askAI()" class="bg-blue-600 px-6 rounded-2xl"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
     <div id="off-scr" class="fixed inset-0 bg-[#05070a] z-[200000] hidden flex flex-col items-center justify-center p-8 text-center">
         <div class="w-24 h-24 bg-red-600/10 rounded-full flex items-center justify-center mb-6 border border-red-500/20"><i class="fas fa-shield-virus text-red-500 text-4xl"></i></div>
         <h1 class="text-3xl font-black italic uppercase mb-2">Tizim Yopiq</h1>
         <p class="text-gray-500 text-[10px] font-bold uppercase mb-10">Texnik ishlar olib borilmoqda...</p>
         <div class="glass p-6 rounded-3xl w-full max-w-xs text-left">
-            <input id="off-admin-key" type="password" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-center mb-4 outline-none font-bold text-white" placeholder="ADMIN PAROL">
-            <button onclick="unlockByAdmin()" class="w-full bg-blue-600 py-4 rounded-2xl font-black uppercase text-[10px]">Unlock</button>
+            <input id="off-admin-key" type="password" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-center mb-4 outline-none font-bold text-white" placeholder="ADMIN PAROLI">
+            <button onclick="unlockByAdmin()" class="w-full bg-blue-600 py-4 rounded-2xl font-black uppercase text-[10px]">Ochish</button>
         </div>
     </div>
 
@@ -53,7 +73,7 @@
         <section id="p-home" class="page active">
             <h2 id="u-name" class="text-2xl font-black italic uppercase mb-6 text-blue-500">_</h2>
             <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="glass p-5 rounded-[2rem] border-l-4 border-blue-500"><p class="text-[8px] font-bold text-gray-500 uppercase">Balans</p><p id="h-cr" class="text-2xl font-black">0</p></div>
+                <div class="glass p-5 rounded-[2rem] border-l-4 border-blue-500"><p class="text-[8px] font-bold text-gray-500 uppercase">Mablag'</p><p id="h-cr" class="text-2xl font-black">0</p></div>
                 <div class="glass p-5 rounded-[2rem] border-l-4 border-purple-500"><p class="text-[8px] font-bold text-gray-500 uppercase">Xaridlar</p><p id="h-items" class="text-2xl font-black">0</p></div>
             </div>
             <p class="text-[10px] font-black uppercase text-gray-500 ml-2 mb-3">Bizning tarmoqlar</p>
@@ -70,52 +90,42 @@
                 <div class="glass p-6 rounded-[2.5rem] flex flex-col items-center text-center">
                     <i class="fas fa-paint-brush text-2xl text-blue-500 mb-4"></i>
                     <h3 class="font-black text-sm uppercase mb-1">Logo Dizayn</h3>
-                    <p class="text-[9px] text-gray-500 font-bold mb-4">Professional va takrorlanmas brend belgisi</p>
+                    <p class="text-[9px] text-gray-500 font-bold mb-4">Professional va betakror brend belgisi</p>
                     <button onclick="buyNow('Logo', 100, 'fa-paint-brush')" class="w-full bg-white text-black py-4 rounded-2xl font-black text-[10px] uppercase">100 CR SOTIB OLISH</button>
-                </div>
-                <div class="glass p-6 rounded-[2.5rem] flex flex-col items-center text-center">
-                    <i class="fas fa-image text-2xl text-purple-500 mb-4"></i>
-                    <h3 class="font-black text-sm uppercase mb-1">Logo + Poster</h3>
-                    <p class="text-[9px] text-gray-500 font-bold mb-4">Logo va mahsulot uchun maxsus promo rasm</p>
-                    <button onclick="buyNow('Logo + Poster', 250, 'fa-image')" class="w-full bg-white text-black py-4 rounded-2xl font-black text-[10px] uppercase">250 CR SOTIB OLISH</button>
                 </div>
             </div>
         </section>
 
-        <section id="p-community" class="page"><h2 class="text-3xl font-black italic uppercase mb-6">Top Users_</h2><div id="leader-list" class="space-y-3"></div></section>
+        <section id="p-community" class="page"><h2 class="text-3xl font-black italic uppercase mb-6">Reyting_</h2><div id="leader-list" class="space-y-3"></div></section>
 
         <section id="p-admin" class="page">
             <h2 class="text-3xl font-black italic uppercase mb-4 text-blue-500">Root_</h2>
             <div id="admin-auth-box" class="glass p-8 rounded-[3rem] text-center mb-6">
-                <input id="admin-key-main" type="password" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-center mb-4 outline-none font-bold text-white" placeholder="PASSWORD">
-                <button onclick="checkAdminAccess()" class="w-full bg-blue-600 py-4 rounded-2xl font-black uppercase text-[10px]">Unlock</button>
+                <input id="admin-key-main" type="password" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-center mb-4 outline-none font-bold text-white" placeholder="PAROL">
+                <button onclick="checkAdminAccess()" class="w-full bg-blue-600 py-4 rounded-2xl font-black uppercase text-[10px]">Kirish</button>
             </div>
             <div id="admin-content" class="hidden space-y-6">
-                <button id="toggle-btn" onclick="toggleSystemStatus()" class="w-full py-4 rounded-2xl font-black uppercase text-[10px] transition-all"></button>
+                <button id="toggle-btn" onclick="toggleSystemStatus()" class="w-full py-4 rounded-2xl font-black uppercase text-[10px]"></button>
                 <div id="adm-users-list" class="space-y-3 pb-24"></div>
             </div>
         </section>
 
-        <section id="p-billing" class="page text-center"><h2 class="text-3xl font-black italic uppercase mb-10 text-emerald-500">Hisob To'ldirish_</h2><div class="glass p-8 rounded-[3rem] border-emerald-500/20"><i class="fas fa-wallet text-4xl text-emerald-500 mb-6"></i><p class="text-[10px] font-bold text-gray-500 uppercase mb-8 leading-relaxed">Kredit xarid qilish uchun admin bilan bog'laning</p><a href="https://t.me/logo_designer21" class="block w-full bg-emerald-600 py-5 rounded-2xl font-black uppercase text-[10px]">Bog'lanish</a></div></section>
-        
-        <section id="p-bag" class="page"><h2 class="text-3xl font-black italic uppercase mb-6 text-amber-500">Mening xaridlarim_</h2><div id="bag-list" class="space-y-3"></div></section>
+        <section id="p-billing" class="page text-center"><h2 class="text-3xl font-black italic uppercase mb-10 text-emerald-500">To'lov_</h2><div class="glass p-8 rounded-[3rem] border-emerald-500/20"><i class="fas fa-wallet text-4xl text-emerald-500 mb-6"></i><p class="text-[10px] font-bold text-gray-500 uppercase mb-8">Kredit olish uchun admin bilan bog'laning</p><a href="https://t.me/logo_designer21" class="block w-full bg-emerald-600 py-5 rounded-2xl font-black uppercase text-[10px]">Bog'lanish</a></div></section>
+        <section id="p-bag" class="page"><h2 class="text-3xl font-black italic uppercase mb-6 text-amber-500">Xaridlarim_</h2><div id="bag-list" class="space-y-3"></div></section>
     </main>
 
     <nav class="bottom-nav">
-        <button onclick="nav('home', this)" class="nav-btn active"><i class="fas fa-home"></i><span class="text-[7px] font-bold mt-1 uppercase">Home</span></button>
+        <button onclick="nav('home', this)" class="nav-btn active"><i class="fas fa-home"></i><span class="text-[7px] font-bold mt-1 uppercase">Asosiy</span></button>
         <button onclick="nav('community', this)" class="nav-btn"><i class="fas fa-trophy"></i><span class="text-[7px] font-bold mt-1 uppercase">Top</span></button>
-        <button onclick="nav('market', this)" class="nav-btn"><i class="fas fa-shopping-cart"></i><span class="text-[7px] font-bold mt-1 uppercase">Shop</span></button>
+        <button onclick="nav('market', this)" class="nav-btn"><i class="fas fa-shopping-cart"></i><span class="text-[7px] font-bold mt-1 uppercase">Market</span></button>
         <button onclick="nav('admin', this)" class="nav-btn"><i class="fas fa-user-shield text-xl"></i><span class="text-[7px] font-bold mt-1 uppercase">Admin</span></button>
-        <button onclick="nav('billing', this)" class="nav-btn"><i class="fas fa-credit-card"></i><span class="text-[7px] font-bold mt-1 uppercase">Cash</span></button>
-        <button onclick="nav('bag', this)" class="nav-btn"><i class="fas fa-box"></i><span class="text-[7px] font-bold mt-1 uppercase">Bag</span></button>
+        <button onclick="nav('billing', this)" class="nav-btn"><i class="fas fa-credit-card"></i><span class="text-[7px] font-bold mt-1 uppercase">Pul</span></button>
+        <button onclick="nav('bag', this)" class="nav-btn"><i class="fas fa-box"></i><span class="text-[7px] font-bold mt-1 uppercase">Sumka</span></button>
     </nav>
 
     <script>
-        let state = {
-            db: JSON.parse(localStorage.getItem('nn_db_v38')) || [],
-            me: JSON.parse(localStorage.getItem('nn_me_v38')) || null,
-            status: localStorage.getItem('nn_status') || 'online'
-        };
+        // Oldingi barcha mantiqiy funksiyalar (DB, me, status) saqlab qolindi
+        let state = { db: JSON.parse(localStorage.getItem('nn_db_v38')) || [], me: JSON.parse(localStorage.getItem('nn_me_v38')) || null, status: localStorage.getItem('nn_status') || 'online' };
 
         function toast(m, c="#3b82f6") {
             const t = document.getElementById('toast');
@@ -123,12 +133,24 @@
             setTimeout(() => t.style.display = "none", 2500);
         }
 
-        function save() {
-            if(state.me) { let idx = state.db.findIndex(u => u.name === state.me.name); if(idx !== -1) state.db[idx] = state.me; }
-            localStorage.setItem('nn_db_v38', JSON.stringify(state.db));
-            localStorage.setItem('nn_me_v38', JSON.stringify(state.me));
+        function toggleAI() {
+            let chat = document.getElementById('ai-chat');
+            chat.style.display = chat.style.display === 'flex' ? 'none' : 'flex';
         }
 
+        function askAI() {
+            let inp = document.getElementById('ai-input');
+            let box = document.getElementById('chat-box');
+            if(!inp.value.trim()) return;
+            box.innerHTML += `<div class="bg-white/10 p-3 rounded-2xl rounded-tr-none text-xs ml-auto w-fit">Siz: ${inp.value}</div>`;
+            setTimeout(() => {
+                box.innerHTML += `<div class="bg-blue-600/20 p-3 rounded-2xl rounded-tl-none text-xs w-fit text-blue-400">Nova AI: Tizim tahlil qilinmoqda...</div>`;
+                box.scrollTop = box.scrollHeight;
+            }, 500);
+            inp.value = "";
+        }
+
+        // Boshqa barcha funksiyalar (handleLogin, nav, render...) asliga mos davom etadi
         function handleLogin() {
             let n = document.getElementById('login-name').value.trim();
             if(n.length < 2) return toast("Ism juda qisqa!", "#ef4444");
@@ -140,37 +162,15 @@
             renderHome();
         }
 
+        function save() {
+            if(state.me) { let idx = state.db.findIndex(u => u.name === state.me.name); if(idx !== -1) state.db[idx] = state.me; }
+            localStorage.setItem('nn_db_v38', JSON.stringify(state.db));
+            localStorage.setItem('nn_me_v38', JSON.stringify(state.me));
+        }
+
         function checkSystemStatus() {
             if(state.status === 'offline') document.getElementById('off-scr').classList.remove('hidden');
             else document.getElementById('off-scr').classList.add('hidden');
-        }
-
-        function toggleSystemStatus() {
-            state.status = state.status === 'online' ? 'offline' : 'online';
-            localStorage.setItem('nn_status', state.status);
-            updateAdminBtn();
-            toast(`SISTEMA: ${state.status.toUpperCase()}`, state.status === 'online' ? "#22c55e" : "#ef4444");
-        }
-
-        function updateAdminBtn() {
-            const btn = document.getElementById('toggle-btn');
-            btn.innerText = state.status === 'online' ? "SISTEMANI YOPISH (OFFLINE)" : "SISTEMANI OCHISH (ONLINE)";
-            btn.className = state.status === 'online' ? "w-full py-4 rounded-2xl font-black uppercase text-[10px] bg-red-600/20 text-red-500 border border-red-500/30" : "w-full py-4 rounded-2xl font-black uppercase text-[10px] bg-green-600/20 text-green-500 border border-green-500/30";
-        }
-
-        function unlockByAdmin() {
-            if(document.getElementById('off-admin-key').value === "0000") {
-                document.getElementById('off-scr').classList.add('hidden');
-                nav('admin', document.querySelector('.fa-user-shield').parentElement);
-            } else toast("Xato!", "#ef4444");
-        }
-
-        function checkAdminAccess() {
-            if(document.getElementById('admin-key-main').value === "0000") {
-                document.getElementById('admin-auth-box').classList.add('hidden');
-                document.getElementById('admin-content').classList.remove('hidden');
-                updateAdminBtn(); renderAdminUsers();
-            } else toast("Xato!", "#ef4444");
         }
 
         function nav(id, el) {
@@ -198,33 +198,51 @@
             save(); renderHome(); toast("Xarid qilindi!", "#22c55e");
         }
 
+        function renderLeaderboard() {
+            let sorted = [...state.db].sort((a,b) => b.cr - a.cr);
+            document.getElementById('leader-list').innerHTML = sorted.map((u, i) => `<div class="glass p-4 rounded-2xl flex justify-between items-center"><p class="font-black text-xs uppercase">#${i+1} ${u.name}</p><p class="font-black text-blue-500">${u.cr.toFixed(0)}</p></div>`).join('');
+        }
+
+        function renderBag() {
+            document.getElementById('bag-list').innerHTML = state.me.items.map(l => `<div class="glass p-4 rounded-2xl flex justify-between items-center"><div class="flex items-center gap-3"><i class="fas ${l.icon} text-blue-500"></i><p class="font-black text-[10px] uppercase">${l.name}</p></div><span class="text-[8px] text-gray-500 font-bold">${l.date}</span></div>`).join('') || "<p class='text-center py-20 opacity-20 uppercase font-black text-[10px]'>Bo'sh</p>";
+        }
+
+        function toggleSystemStatus() {
+            state.status = state.status === 'online' ? 'offline' : 'online';
+            localStorage.setItem('nn_status', state.status);
+            updateAdminBtn();
+            toast(`SISTEMA: ${state.status.toUpperCase()}`, state.status === 'online' ? "#22c55e" : "#ef4444");
+        }
+
+        function updateAdminBtn() {
+            const btn = document.getElementById('toggle-btn');
+            btn.innerText = state.status === 'online' ? "SISTEMANI YOPISH" : "SISTEMANI OCHISH";
+            btn.className = state.status === 'online' ? "w-full py-4 rounded-2xl font-black bg-red-600/20 text-red-500" : "w-full py-4 rounded-2xl font-black bg-green-600/20 text-green-500";
+        }
+
+        function checkAdminAccess() {
+            if(document.getElementById('admin-key-main').value === "0000") {
+                document.getElementById('admin-auth-box').classList.add('hidden');
+                document.getElementById('admin-content').classList.remove('hidden');
+                updateAdminBtn(); renderAdminUsers();
+            } else toast("Xato!", "#ef4444");
+        }
+
+        function unlockByAdmin() {
+            if(document.getElementById('off-admin-key').value === "0000") {
+                document.getElementById('off-scr').classList.add('hidden');
+                nav('admin', document.querySelector('.fa-user-shield').parentElement);
+            } else toast("Xato!", "#ef4444");
+        }
+
         function renderAdminUsers() {
-            document.getElementById('adm-users-list').innerHTML = state.db.map((u, i) => `
-                <div class="glass p-5 rounded-3xl flex justify-between items-center">
-                    <p class="text-[10px] font-black uppercase">${u.name} <br> <span class="text-blue-500">${u.cr} CR</span></p>
-                    <div class="flex gap-2">
-                        <input id="amt-${i}" type="number" class="w-14 bg-white/5 border border-white/10 rounded-xl px-2 text-[10px] text-white" placeholder="+">
-                        <button onclick="addCr(${idx})" class="bg-blue-600 px-3 py-2 rounded-xl text-[8px] font-black uppercase">Add</button>
-                    </div>
-                </div>`).join('');
+            document.getElementById('adm-users-list').innerHTML = state.db.map((u, i) => `<div class="glass p-5 rounded-3xl flex justify-between items-center"><p class="text-[10px] font-black uppercase">${u.name} <br> <span class="text-blue-500">${u.cr} CR</span></p><div class="flex gap-2"><input id="amt-${i}" type="number" class="w-14 bg-white/5 border border-white/10 rounded-xl px-2 text-[10px] text-white" placeholder="+"><button onclick="addCr(${i})" class="bg-blue-600 px-3 py-2 rounded-xl text-[8px] font-black uppercase">Add</button></div></div>`).join('');
         }
 
         function addCr(idx) {
             let val = parseFloat(document.getElementById(`amt-${idx}`).value);
             if(isNaN(val)) return;
-            state.db[idx].cr += val;
-            save(); renderAdminUsers(); toast(`+${val} CR qo'shildi!`, "#22c55e");
-        }
-
-        function renderLeaderboard() {
-            let sorted = [...state.db].sort((a,b) => b.cr - a.cr);
-            document.getElementById('leader-list').innerHTML = sorted.map((u, i) => `
-                <div class="glass p-4 rounded-2xl flex justify-between items-center"><p class="font-black text-xs uppercase"><span class="text-gray-600">#${i+1}</span> ${u.name}</p><p class="font-black text-blue-500">${u.cr.toFixed(0)}</p></div>`).join('');
-        }
-
-        function renderBag() {
-            document.getElementById('bag-list').innerHTML = state.me.items.map(l => `
-                <div class="glass p-4 rounded-2xl flex justify-between items-center"><div class="flex items-center gap-3"><i class="fas ${l.icon} text-blue-500"></i><p class="font-black text-[10px] uppercase">${l.name}</p></div><span class="text-[8px] text-gray-500 font-bold">${l.date}</span></div>`).join('') || "<p class='text-center py-20 opacity-20 uppercase font-black text-[10px] tracking-[0.2em]'>Bo'sh</p>";
+            state.db[idx].cr += val; save(); renderAdminUsers(); toast(`+${val} CR qo'shildi!`);
         }
 
         window.onload = () => { if(!state.me) document.getElementById('login-scr').classList.remove('hidden'); else { checkSystemStatus(); renderHome(); } };
