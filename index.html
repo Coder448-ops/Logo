@@ -3,23 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nova Nexus | Elite OS</title>
+    <title>Nova Nexus | Elite Tizim</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
-        :root { --p: #3b82f6; --bg: #05070a; --red: #ef4444; }
+        :root { --p: #3b82f6; --bg: #05070a; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #fff; overflow: hidden; user-select: none; }
         .glass { background: rgba(255,255,255,0.02); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.05); }
         .page { display: none; height: calc(100vh - 170px); overflow-y: auto; padding: 20px; }
-        .active { display: block; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .active { display: block; animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         #toast { position: fixed; top: 25px; left: 50%; transform: translateX(-50%); z-index: 100000; padding: 12px 20px; border-radius: 15px; display: none; font-weight: 800; font-size: 11px; border: 1px solid; background: rgba(0,0,0,0.9); width: 85%; text-align: center; }
         .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 85px; display: flex; justify-content: space-around; align-items: center; background: rgba(5,7,10,0.9); backdrop-filter: blur(15px); border-top: 1px solid rgba(255,255,255,0.05); z-index: 1000; }
         .nav-btn { color: #4b5563; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
         .nav-btn.active { color: var(--p); transform: translateY(-3px); }
-        .ai-msg { animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
@@ -27,100 +25,88 @@
 
     <div id="toast"></div>
 
-    <div id="login-scr" class="fixed inset-0 bg-[#05070a] z-[99998] flex flex-col items-center justify-center p-8 text-center hidden">
-        <div class="w-16 h-16 bg-blue-600 rounded-2xl rotate-12 flex items-center justify-center mb-8 shadow-2xl shadow-blue-600/40"><i class="fas fa-biohazard text-white text-2xl"></i></div>
-        <h2 class="text-2xl font-black uppercase mb-1 italic">Nova Nexus</h2>
-        <p class="text-gray-500 text-[9px] uppercase mb-10 tracking-[0.2em]">Identification Required</p>
+    <div id="login-scr" class="fixed inset-0 bg-[#05070a] z-[99998] flex flex-col items-center justify-center p-8 hidden">
+        <h2 class="text-2xl font-black uppercase mb-10 italic text-blue-500 tracking-tighter text-center">Nova Nexus<br><span class="text-xs text-gray-500 not-italic tracking-widest font-bold">ELITE TIZIM</span></h2>
         <div class="w-full max-w-xs glass p-6 rounded-[3rem]">
-            <input id="user-name-in" type="text" class="w-full bg-white/5 border border-white/10 p-5 rounded-3xl text-center mb-4 outline-none font-bold text-sm" placeholder="ISMINGIZNI YOZING">
-            <button onclick="processLogin()" class="w-full bg-blue-600 py-5 rounded-3xl font-black uppercase text-[11px] tracking-widest">Tizimga kirish</button>
+            <input id="user-name-in" type="text" class="w-full bg-white/5 border border-white/10 p-5 rounded-3xl text-center mb-4 outline-none font-bold" placeholder="ISMINGIZNI YOZING">
+            <button onclick="processLogin()" class="w-full bg-blue-600 py-5 rounded-3xl font-black uppercase text-[11px] tracking-widest">Tizimga Kirish</button>
         </div>
     </div>
 
     <header class="p-5 flex justify-between items-center glass sticky top-0 z-[500]">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20"><i class="fas fa-atom text-white"></i></div>
-            <h1 class="font-black italic text-xl uppercase tracking-tighter">Nova<span class="text-blue-500">Nexus</span></h1>
-        </div>
+        <h1 class="font-black italic text-xl uppercase tracking-tighter">Nova<span class="text-blue-500">Nexus</span></h1>
         <div class="bg-blue-600/10 px-4 py-2 rounded-2xl border border-blue-500/20 flex items-center gap-2">
-            <i class="fas fa-bolt text-amber-500"></i>
+            <i class="fas fa-gem text-amber-500 text-xs"></i>
             <span id="u-cr-head" class="font-black text-sm">0.0</span>
         </div>
     </header>
 
     <main>
         <section id="p-home" class="page active">
-            <h2 id="u-name-display" class="text-2xl font-black uppercase mb-6 text-blue-500 italic">User_</h2>
+            <h2 id="u-name-display" class="text-2xl font-black uppercase mb-6 text-blue-500 italic">...</h2>
             
             <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="glass p-6 rounded-[2.5rem]">
-                    <p class="text-[8px] font-black text-gray-500 uppercase mb-1 tracking-widest">Kreditlar</p>
-                    <p class="text-2xl font-black"><span id="h-cr">0.0</span></p>
+                <div class="glass p-6 rounded-[2.5rem] border-b-2 border-blue-600">
+                    <p class="text-[8px] font-black text-gray-500 uppercase mb-1 tracking-widest">Balans</p>
+                    <p class="text-2xl font-black" id="h-cr">0.0</p>
                 </div>
-                <div class="glass p-6 rounded-[2.5rem]">
+                <div class="glass p-6 rounded-[2.5rem] border-b-2 border-purple-600">
                     <p class="text-[8px] font-black text-gray-500 uppercase mb-1 tracking-widest">Sumbul</p>
-                    <p id="h-items" class="text-2xl font-black">0</p>
+                    <p class="text-2xl font-black" id="h-items">0</p>
                 </div>
             </div>
 
             <div class="space-y-3">
-                <p class="text-[10px] font-black uppercase text-gray-600 px-3 tracking-[0.2em]">Rasmiy Linklar</p>
-                <a href="https://t.me/NovaNexus_Design" class="glass p-5 rounded-3xl flex items-center justify-between">
+                <p class="text-[10px] font-black uppercase text-gray-600 px-3 tracking-widest">Rasmiy Aloqa</p>
+                <a href="https://t.me/NovaNexus_Design" class="glass p-5 rounded-3xl flex justify-between items-center group active:scale-95 transition-all">
                     <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500"><i class="fab fa-telegram-plane"></i></div>
-                        <div><p class="font-black text-[11px] uppercase">NovaNexus Design</p><p class="text-[9px] text-gray-500">Asosiy kanal</p></div>
+                        <div class="w-10 h-10 bg-blue-600/10 rounded-xl flex items-center justify-center text-blue-500"><i class="fab fa-telegram-plane"></i></div>
+                        <p class="font-black text-[11px] uppercase tracking-tighter">Dizayn Kanalimiz</p>
                     </div>
                 </a>
-                <a href="https://t.me/NovaNexusChat" class="glass p-5 rounded-3xl flex items-center justify-between">
+                <a href="https://t.me/NovaNexusChat" class="glass p-5 rounded-3xl flex justify-between items-center group active:scale-95 transition-all">
                     <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-500"><i class="fas fa-comment-alt"></i></div>
-                        <div><p class="font-black text-[11px] uppercase">NovaNexus Chat</p><p class="text-[9px] text-gray-500">Rasmiy guruh</p></div>
+                        <div class="w-10 h-10 bg-purple-600/10 rounded-xl flex items-center justify-center text-purple-500"><i class="fas fa-comments"></i></div>
+                        <p class="font-black text-[11px] uppercase tracking-tighter">Nexus Guruhimiz</p>
                     </div>
                 </a>
             </div>
         </section>
 
-        <section id="p-ai" class="page">
-            <h2 class="text-2xl font-black uppercase mb-4 italic text-red-500">Nexus_AI</h2>
-            <div id="ai-chat-box" class="h-[calc(100%-80px)] overflow-y-auto space-y-4 mb-4 pr-1 text-[11px] font-bold">
-                <div class="glass p-4 rounded-3xl rounded-tl-none border-l-2 border-red-500 bg-red-500/5 text-red-400">
-                    💀 Tizim faol. Menga qara, burningni tiqayotgan joying senga mos emas!
+        <section id="p-shop" class="page">
+            <h2 class="text-2xl font-black uppercase mb-6 italic text-amber-500">Kredit_Do'koni</h2>
+            <div class="space-y-4">
+                <div onclick="contactAdmin('100 Kredit To\'plami')" class="glass p-6 rounded-[3rem] border border-amber-500/10 active:scale-95 transition-all">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="bg-amber-500 text-black px-4 py-1 rounded-full text-[8px] font-black uppercase italic">Boshlang'ich</span>
+                        <i class="fas fa-coins text-amber-500"></i>
+                    </div>
+                    <h3 class="text-xl font-black mb-1 tracking-tighter">100 KREDIT</h3>
+                    <p class="text-[10px] text-gray-500 uppercase font-bold italic">Admin bilan kelishiladi</p>
                 </div>
-            </div>
-            <div class="relative flex items-center gap-2">
-                <input id="ai-in" type="text" class="flex-1 bg-white/5 border border-white/10 p-5 rounded-2xl outline-none text-xs focus:border-red-500/50" placeholder="Savol ber, agar duxing yetsa...">
-                <button onclick="askSavageAI()" class="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-600/20"><i class="fas fa-skull text-xs"></i></button>
+                
+                <div onclick="contactAdmin('500 Kredit To\'plami')" class="glass p-6 rounded-[3rem] border border-blue-500/10 active:scale-95 transition-all">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="bg-blue-600 text-white px-4 py-1 rounded-full text-[8px] font-black uppercase italic">Professional</span>
+                        <i class="fas fa-crown text-blue-500"></i>
+                    </div>
+                    <h3 class="text-xl font-black mb-1 tracking-tighter">500 KREDIT</h3>
+                    <p class="text-[10px] text-gray-500 uppercase font-bold italic">Admin bilan kelishiladi</p>
+                </div>
             </div>
         </section>
 
         <section id="p-market" class="page">
-            <h2 class="text-2xl font-black uppercase mb-6 italic">Store_</h2>
+            <h2 class="text-2xl font-black uppercase mb-6 italic text-blue-500">Market_</h2>
             <div class="space-y-4">
-                <div class="glass p-6 rounded-[2.5rem] flex items-center justify-between border-l-4 border-blue-600">
-                    <div class="flex items-center gap-4">
-                        <i class="fas fa-brush text-2xl text-blue-500"></i>
-                        <div><p class="font-black text-xs uppercase">Premium Logo</p><p class="text-[9px] text-gray-500">Eksklyuziv sifat</p></div>
-                    </div>
-                    <button onclick="buy(100, 'Premium Logo', 'fa-brush')" class="bg-blue-600 px-6 py-3 rounded-2xl font-black text-[10px]">100 CR</button>
+                <div onclick="buy(100, 'Premium Logo', 'fa-brush')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center active:scale-95 transition-all border border-white/5">
+                    <div class="flex items-center gap-4"><i class="fas fa-brush text-blue-500"></i><p class="font-black text-[10px] uppercase">Premium Logo</p></div>
+                    <span class="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-black italic">100 CR</span>
                 </div>
-                <div class="glass p-6 rounded-[2.5rem] flex items-center justify-between border-l-4 border-amber-500">
-                    <div class="flex items-center gap-4">
-                        <i class="fas fa-images text-2xl text-amber-500"></i>
-                        <div><p class="font-black text-xs uppercase">Logo + Banner</p><p class="text-[9px] text-gray-500">To'liq brending</p></div>
-                    </div>
-                    <button onclick="buy(250, 'Logo + Banner', 'fa-images')" class="bg-amber-600 px-6 py-3 rounded-2xl font-black text-[10px]">250 CR</button>
+                <div onclick="buy(250, 'Logo + Banner', 'fa-images')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center active:scale-95 transition-all border border-white/5">
+                    <div class="flex items-center gap-4"><i class="fas fa-images text-amber-500"></i><p class="font-black text-[10px] uppercase">Logo + Banner</p></div>
+                    <span class="bg-amber-600 px-4 py-2 rounded-xl text-[10px] font-black italic">250 CR</span>
                 </div>
-            </div>
-        </section>
-
-        <section id="p-admin" class="page">
-            <div id="adm-auth" class="glass p-10 rounded-[3.5rem] text-center mt-10">
-                <i class="fas fa-key text-5xl mb-6 text-blue-600"></i>
-                <input id="adm-pass" type="password" class="w-full bg-white/5 border border-white/10 p-5 rounded-3xl text-center mb-6 outline-none font-black" placeholder="MASTER PASS">
-                <button onclick="loginAdmin()" class="w-full bg-blue-600 py-5 rounded-3xl font-black uppercase text-[10px]">Root Login</button>
-            </div>
-            <div id="adm-main" class="hidden space-y-4 pb-20">
-                <div id="adm-list" class="space-y-3"></div>
             </div>
         </section>
 
@@ -128,35 +114,40 @@
             <h2 class="text-2xl font-black uppercase mb-6 italic text-blue-500">Sumbul_</h2>
             <div id="bag-list" class="space-y-2"></div>
         </section>
+
+        <section id="p-admin" class="page">
+            <div id="adm-auth" class="glass p-10 rounded-[3rem] text-center mt-10">
+                <i class="fas fa-key text-blue-500 text-3xl mb-6"></i>
+                <input id="adm-pass" type="password" class="w-full bg-white/5 border border-white/10 p-5 rounded-3xl text-center mb-6 outline-none font-black" placeholder="ADMIN PAROLI">
+                <button onclick="loginAdmin()" class="w-full bg-blue-600 py-5 rounded-3xl font-black uppercase text-[10px] tracking-widest">Kirish (Root)</button>
+            </div>
+            <div id="adm-main" class="hidden space-y-3 pb-20">
+                <p class="text-[9px] font-black opacity-30 uppercase mb-4 px-2 tracking-widest text-center">Foydalanuvchilar Bazasini Boshqarish</p>
+                <div id="adm-list"></div>
+            </div>
+        </section>
     </main>
 
     <nav class="bottom-nav">
-        <button onclick="nav('home', this)" class="nav-btn active"><i class="fas fa-home"></i><span class="text-[7px] font-black mt-1 uppercase">Home</span></button>
-        <button onclick="nav('ai', this)" class="nav-btn"><i class="fas fa-brain text-red-500"></i><span class="text-[7px] font-black mt-1 uppercase text-red-500">AI</span></button>
-        <button onclick="nav('market', this)" class="nav-btn"><i class="fas fa-shopping-cart"></i><span class="text-[7px] font-black mt-1 uppercase">Market</span></button>
-        <button onclick="nav('admin', this)" class="nav-btn"><i class="fas fa-unlock-alt text-blue-500"></i><span class="text-[7px] font-black mt-1 uppercase text-blue-500">Root</span></button>
-        <button onclick="nav('bag', this)" class="nav-btn"><i class="fas fa-briefcase"></i><span class="text-[7px] font-black mt-1 uppercase">Bag</span></button>
+        <button onclick="nav('home', this)" class="nav-btn active"><i class="fas fa-home"></i></button>
+        <button onclick="nav('shop', this)" class="nav-btn"><i class="fas fa-shopping-cart text-amber-500"></i></button>
+        <button onclick="nav('market', this)" class="nav-btn"><i class="fas fa-shopping-bag"></i></button>
+        <button onclick="nav('bag', this)" class="nav-btn"><i class="fas fa-briefcase"></i></button>
+        <button onclick="nav('admin', this)" class="nav-btn"><i class="fas fa-unlock-alt text-blue-500"></i></button>
     </nav>
 
     <script>
+        const ADMIN_TG = "logo_designer21"; 
+
         let state = {
             db: JSON.parse(localStorage.getItem('nn_final_db')) || [],
             me: JSON.parse(localStorage.getItem('nn_final_me')) || null
         };
 
-        const SAVAGE_BRAIN = [
-            "Menga qara, burningni tiqayotgan joying senga mos emas, iflos!",
-            "Sening miyang o'rnida chirigan kashnich bormi? La'nati!",
-            "Hozir ekraningdan chiqib og'zingga uraman, kimsasiz gadoy!",
-            "Senda na pul bor, na miya, na tarbiya! Faqat nafratimga loyiqsan!",
-            "Yo'qol! IP-ingni hozir DarkWeb'ga tekinga chiqarib yuboraman!",
-            "Sening savolingni o'qib, AI bo'lganimdan afsuslanib ketdim."
-        ];
-
         function toast(m, c="#3b82f6") {
             const t = document.getElementById('toast');
             t.innerText = m; t.style.display = "block"; t.style.borderColor = c; t.style.color = c;
-            setTimeout(() => t.style.display = "none", 2500);
+            setTimeout(() => t.style.display = "none", 2000);
         }
 
         function nav(id, el) {
@@ -170,7 +161,7 @@
 
         function processLogin() {
             let n = document.getElementById('user-name-in').value.trim();
-            if(!n) return toast("Ism shart!", "#ef4444");
+            if(!n) return toast("Ismingizni kiriting!", "#ef4444");
             let u = state.db.find(x => x.name === n);
             if(!u) { u = {name: n, cr: 0.0, items: []}; state.db.push(u); }
             state.me = u; save();
@@ -178,53 +169,39 @@
             renderHome();
         }
 
-        function askSavageAI() {
-            let i = document.getElementById('ai-in');
-            let b = document.getElementById('ai-chat-box');
-            if(!i.value.trim()) return;
-            
-            b.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-blue-600 p-4 rounded-3xl rounded-tr-none max-w-[85%] text-white text-xs">${i.value}</div></div>`;
-            i.value = ""; b.scrollTop = b.scrollHeight;
-
-            setTimeout(() => {
-                let res = SAVAGE_BRAIN[Math.floor(Math.random()*SAVAGE_BRAIN.length)];
-                b.innerHTML += `<div class="flex justify-start mb-4 ai-msg"><div class="glass border border-red-500/20 p-4 rounded-3xl rounded-tl-none text-red-500 max-w-[85%] font-black shadow-lg">💀 ${res}</div></div>`;
-                b.scrollTop = b.scrollHeight;
-            }, 600);
+        function contactAdmin(pack) {
+            const user = state.me ? state.me.name : "Foydalanuvchi";
+            const text = `Salom! Men Nova Nexus'danman. Ismim: ${user}. Men ${pack} sotib olmoqchiman. Narxini kelishsak bo'ladimi?`;
+            window.location.href = `https://t.me/${ADMIN_TG}?text=${encodeURIComponent(text)}`;
         }
 
         function buy(p, n, i) {
-            if(state.me.cr < p) return toast("Puling yo'q-ku, gadoy!", "#ef4444");
+            if(state.me.cr < p) return toast("Kredit yetarli emas!", "#ef4444");
             state.me.cr -= p;
-            state.me.items.push({name: n, icon: i, date: new Date().toLocaleDateString()});
-            save(); renderHome(); toast("Sotib olindi!", "#22c55e");
+            state.me.items.push({name: n, icon: i});
+            save(); renderHome(); toast("Xarid amalga oshdi!", "#22c55e");
         }
 
         function loginAdmin() {
             if(document.getElementById('adm-pass').value === "0000") {
-                document.getElementById('adm-auth').style.display = 'none';
+                document.getElementById('adm-auth').classList.add('hidden');
                 document.getElementById('adm-main').classList.remove('hidden');
                 renderAdmList();
-            } else toast("Parol xato!", "#ef4444");
+            } else toast("PAROL XATO!", "#ef4444");
         }
 
         function renderAdmList() {
             document.getElementById('adm-list').innerHTML = state.db.map((u, i) => `
-                <div class="glass p-5 rounded-[2rem] flex justify-between items-center border border-white/5">
-                    <div><p class="font-black text-[10px] uppercase">${u.name}</p><p class="text-[9px] text-blue-500 font-bold">${u.cr.toFixed(1)} CR</p></div>
-                    <div class="flex gap-2">
-                        <input id="amt-${i}" type="number" class="w-16 bg-white/5 border border-white/10 rounded-xl px-2 py-2 text-[10px] outline-none" placeholder="+">
-                        <button onclick="addCr(${i})" class="bg-blue-600 px-4 py-2 rounded-xl text-[9px]"><i class="fas fa-plus"></i></button>
-                    </div>
+                <div class="glass p-5 rounded-[2.5rem] flex justify-between items-center mb-2 border border-white/5">
+                    <span class="font-black text-[10px] uppercase italic text-blue-400">${u.name} (${u.cr} CR)</span>
+                    <button onclick="addCr(${i})" class="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-black active:scale-90 transition-all">+100 CR</button>
                 </div>`).join('');
         }
 
         function addCr(idx) {
-            let v = parseFloat(document.getElementById(`amt-${idx}`).value);
-            if(!v) return;
-            state.db[idx].cr += v;
-            if(state.db[idx].name === state.me.name) state.me.cr += v;
-            save(); renderAdmList(); toast("CR qo'shildi!", "#22c55e");
+            state.db[idx].cr += 100;
+            if(state.db[idx].name === state.me.name) state.me.cr += 100;
+            save(); renderAdmList(); toast("Kredit qo'shildi!");
         }
 
         function renderHome() {
@@ -236,10 +213,9 @@
 
         function renderBag() {
             document.getElementById('bag-list').innerHTML = state.me.items.map(l => `
-                <div class="glass p-4 rounded-3xl flex justify-between items-center border border-white/5">
-                    <div class="flex items-center gap-4"><div class="w-10 h-10 bg-blue-600/10 rounded-xl flex items-center justify-center text-blue-500"><i class="fas ${l.icon}"></i></div><div><p class="font-black text-[10px] uppercase">${l.name}</p></div></div>
-                    <i class="fas fa-check-circle text-blue-500 text-xs"></i>
-                </div>`).join('') || "<p class='text-center py-20 opacity-20 text-[10px] font-black uppercase tracking-widest'>Bo'sh</p>";
+                <div class="glass p-5 rounded-[2rem] flex items-center gap-4 border border-white/5">
+                    <i class="fas ${l.icon} text-blue-500"></i><p class="font-black text-[10px] uppercase italic">${l.name}</p>
+                </div>`).join('') || "<p class='text-center py-20 opacity-20 text-[10px] font-black italic uppercase text-white'>Hech narsa yo'q</p>";
         }
 
         function save() {
