@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nova Nexus | Elite v6.0</title>
+    <title>Nova Nexus | Elite v6.1</title>
+    <link rel="icon" href="./photo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -19,7 +20,6 @@
         .nav-btn { color: #4b5563; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
         .nav-btn.active { color: var(--p); transform: translateY(-3px); }
         ::-webkit-scrollbar { display: none; }
-        input::-webkit-inner-spin-button { display: none; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -47,15 +47,15 @@
             <h2 id="u-name-display" class="text-2xl font-black uppercase mb-6 text-blue-500 italic">...</h2>
             <div class="grid grid-cols-2 gap-4 mb-8">
                 <div class="glass p-6 rounded-[2.5rem] border-b-2 border-blue-600">
-                    <p class="text-[8px] font-black text-gray-500 uppercase mb-1">BALANS</p>
-                    <p class="text-2xl font-black" id="h-cr">0.0</p>
+                    <p class="text-[8px] font-black text-gray-500 uppercase mb-1 tracking-widest text-center">BALANS</p>
+                    <p class="text-2xl font-black text-center" id="h-cr">0.0</p>
                 </div>
                 <div class="glass p-6 rounded-[2.5rem] border-b-2 border-purple-600">
-                    <p class="text-[8px] font-black text-gray-500 uppercase mb-1">SUMBUL</p>
-                    <p class="text-2xl font-black" id="h-items">0</p>
+                    <p class="text-[8px] font-black text-gray-500 uppercase mb-1 tracking-widest text-center">SUMBUL</p>
+                    <p class="text-2xl font-black text-center" id="h-items">0</p>
                 </div>
             </div>
-            <a href="https://t.me/NovaNexus_Design" class="glass p-5 rounded-3xl flex justify-between items-center group active:scale-95 transition-all">
+            <a href="https://t.me/NovaNexus_Design" class="glass p-5 rounded-3xl flex justify-between items-center active:scale-95 transition-all">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-blue-600/10 rounded-xl flex items-center justify-center text-blue-500"><i class="fab fa-telegram-plane"></i></div>
                     <p class="font-black text-[11px] uppercase tracking-tighter">RASMIY KANAL</p>
@@ -65,40 +65,37 @@
         </section>
 
         <section id="p-shop" class="page">
-            <h2 class="text-2xl font-black uppercase mb-6 italic text-amber-500">CREDIT_SHOP</h2>
-            <div class="space-y-4">
-                <div onclick="contactAdmin('Kredit olish')" class="glass p-6 rounded-[3rem] border border-amber-500/10 active:scale-95 transition-all">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="bg-amber-500 text-black px-4 py-1 rounded-full text-[8px] font-black">ELITE</span>
-                        <i class="fas fa-coins text-amber-500"></i>
-                    </div>
-                    <h3 class="text-xl font-black">KREDIT SOTIB OLISH</h3>
-                    <p class="text-[10px] text-gray-500 uppercase font-bold italic mt-1">Admin bilan narxni kelishish</p>
-                </div>
+            <h2 class="text-2xl font-black uppercase mb-6 italic text-amber-500 text-center">Kredit_Olish</h2>
+            <div onclick="contactAdmin('Kredit xarid qilish')" class="glass p-8 rounded-[3rem] border border-amber-500/10 active:scale-95 transition-all text-center">
+                <i class="fas fa-coins text-amber-500 text-4xl mb-4"></i>
+                <h3 class="text-xl font-black mb-1">ADMIN BILAN ALOQA</h3>
+                <p class="text-[10px] text-gray-500 uppercase font-bold italic">Kredit miqdori va narxini kelishish uchun bosing</p>
             </div>
         </section>
 
         <section id="p-market" class="page">
-            <h2 class="text-2xl font-black uppercase mb-6 italic text-blue-500">MARKET_</h2>
+            <h2 class="text-2xl font-black uppercase mb-6 italic text-blue-500">Market_</h2>
             <div class="space-y-4">
-                <div onclick="buy(100, 'Premium Logo', 'fa-brush')" class="glass p-5 rounded-[2.5rem] flex justify-between items-center border border-white/5 active:scale-95 transition-all">
-                    <div class="flex items-center gap-4"><i class="fas fa-brush text-blue-500"></i><p class="font-black text-[10px] uppercase">Premium Logo</p></div>
-                    <span class="bg-blue-600/20 text-blue-400 px-4 py-2 rounded-xl text-[10px] font-black">100 CR</span>
+                <div onclick="buy(100, 'Premium Logo', 'fa-brush')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5 active:scale-95 transition-all">
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-brush text-blue-500 text-xl"></i>
+                        <p class="font-black text-[11px] uppercase">Premium Logo</p>
+                    </div>
+                    <span class="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-black italic">100 CR</span>
                 </div>
-                <div onclick="buy(250, 'Logo + Banner', 'fa-images')" class="glass p-5 rounded-[2.5rem] flex justify-between items-center border border-white/5 active:scale-95 transition-all">
-                    <div class="flex items-center gap-4"><i class="fas fa-images text-purple-500"></i><p class="font-black text-[10px] uppercase">Logo + Banner</p></div>
-                    <span class="bg-purple-600/20 text-purple-400 px-4 py-2 rounded-xl text-[10px] font-black">250 CR</span>
-                </div>
-                <div onclick="buy(400, 'Logo + Reklama Banneri', 'fa-ad')" class="glass p-5 rounded-[2.5rem] flex justify-between items-center border border-white/5 active:scale-95 transition-all">
-                    <div class="flex items-center gap-4"><i class="fas fa-ad text-amber-500"></i><p class="font-black text-[10px] uppercase tracking-tighter">Logo + Reklama Banneri</p></div>
-                    <span class="bg-amber-600/20 text-amber-400 px-4 py-2 rounded-xl text-[10px] font-black uppercase italic text-[9px]">400 CR</span>
+                <div onclick="buy(250, 'Logo + Banner', 'fa-images')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5 active:scale-95 transition-all">
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-images text-purple-500 text-xl"></i>
+                        <p class="font-black text-[11px] uppercase">Logo + Banner</p>
+                    </div>
+                    <span class="bg-purple-600 px-4 py-2 rounded-xl text-[10px] font-black italic">250 CR</span>
                 </div>
             </div>
         </section>
 
         <section id="p-bag" class="page">
-            <h2 class="text-2xl font-black uppercase mb-6 italic text-blue-500">SUMBUL_</h2>
-            <div id="bag-list" class="grid grid-cols-1 gap-3"></div>
+            <h2 class="text-2xl font-black uppercase mb-6 italic text-blue-500">Sumbul_</h2>
+            <div id="bag-list" class="space-y-3"></div>
         </section>
 
         <section id="p-admin" class="page">
@@ -123,8 +120,8 @@
     <script>
         const ADMIN_TG = "logo_designer21";
         let state = {
-            db: JSON.parse(localStorage.getItem('nn_db_v6')) || [],
-            me: JSON.parse(localStorage.getItem('nn_me_v6')) || null
+            db: JSON.parse(localStorage.getItem('nn_db_final')) || [],
+            me: JSON.parse(localStorage.getItem('nn_me_final')) || null
         };
 
         function toast(m, c="#3b82f6") {
@@ -140,7 +137,6 @@
             el.classList.add('active');
             if(id === 'home') renderHome();
             if(id === 'bag') renderBag();
-            if(id === 'admin' && document.getElementById('adm-main').classList.contains('active')) renderAdmList();
         }
 
         function processLogin() {
@@ -189,7 +185,7 @@
             state.db[idx].cr += val;
             if(state.db[idx].name === state.me.name) state.me.cr += val;
             input.value = "";
-            save(); renderAdmList(); toast(`${val} CR QO'SHILDI!`, "#22c55e");
+            save(); renderAdmList(); toast(`${val} KREDIT QO'SHILDI!`, "#22c55e");
             renderHome();
         }
 
@@ -213,7 +209,7 @@
                         <i class="fas ${l.icon} text-blue-500"></i>
                         <div>
                             <p class="font-black text-[10px] uppercase italic">${l.name}</p>
-                            <p class="text-[8px] text-gray-500 uppercase">${l.date}</p>
+                            <p class="text-[8px] text-gray-400 uppercase tracking-widest">${l.date}</p>
                         </div>
                     </div>
                     <i class="fas fa-check-circle text-green-500 text-xs"></i>
@@ -225,8 +221,8 @@
                 let i = state.db.findIndex(u => u.name === state.me.name);
                 if(i !== -1) state.db[i] = state.me;
             }
-            localStorage.setItem('nn_db_v6', JSON.stringify(state.db));
-            localStorage.setItem('nn_me_v6', JSON.stringify(state.me));
+            localStorage.setItem('nn_db_final', JSON.stringify(state.db));
+            localStorage.setItem('nn_me_final', JSON.stringify(state.me));
         }
 
         window.onload = () => {
