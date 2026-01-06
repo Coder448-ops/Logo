@@ -19,6 +19,7 @@
         .nav-btn { color: #4b5563; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
         .nav-btn.active { color: var(--p); transform: translateY(-3px); }
         ::-webkit-scrollbar { display: none; }
+        input[type="number"]::-webkit-inner-spin-button { display: none; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -26,10 +27,10 @@
     <div id="toast"></div>
 
     <div id="login-scr" class="fixed inset-0 bg-[#05070a] z-[99998] flex flex-col items-center justify-center p-8 hidden">
-        <h2 class="text-2xl font-black uppercase mb-10 italic text-blue-500 tracking-tighter text-center">Nova Nexus<br><span class="text-xs text-gray-500 not-italic tracking-widest font-bold">ELITE TIZIM</span></h2>
+        <h2 class="text-2xl font-black uppercase mb-10 italic text-blue-500 tracking-tighter">Nova Nexus</h2>
         <div class="w-full max-w-xs glass p-6 rounded-[3rem]">
-            <input id="user-name-in" type="text" class="w-full bg-white/5 border border-white/10 p-5 rounded-3xl text-center mb-4 outline-none font-bold" placeholder="ISMINGIZNI YOZING">
-            <button onclick="processLogin()" class="w-full bg-blue-600 py-5 rounded-3xl font-black uppercase text-[11px] tracking-widest">Tizimga Kirish</button>
+            <input id="user-name-in" type="text" class="w-full bg-white/5 border border-white/10 p-5 rounded-3xl text-center mb-4 outline-none font-bold uppercase" placeholder="ISMINGIZ">
+            <button onclick="processLogin()" class="w-full bg-blue-600 py-5 rounded-3xl font-black uppercase text-[11px] tracking-widest">Kirish</button>
         </div>
     </div>
 
@@ -44,30 +45,21 @@
     <main>
         <section id="p-home" class="page active">
             <h2 id="u-name-display" class="text-2xl font-black uppercase mb-6 text-blue-500 italic">...</h2>
-            
             <div class="grid grid-cols-2 gap-4 mb-8">
                 <div class="glass p-6 rounded-[2.5rem] border-b-2 border-blue-600">
-                    <p class="text-[8px] font-black text-gray-500 uppercase mb-1 tracking-widest">Balans</p>
+                    <p class="text-[8px] font-black text-gray-500 uppercase mb-1">Balans</p>
                     <p class="text-2xl font-black" id="h-cr">0.0</p>
                 </div>
                 <div class="glass p-6 rounded-[2.5rem] border-b-2 border-purple-600">
-                    <p class="text-[8px] font-black text-gray-500 uppercase mb-1 tracking-widest">Sumbul</p>
+                    <p class="text-[8px] font-black text-gray-500 uppercase mb-1">Sumbul</p>
                     <p class="text-2xl font-black" id="h-items">0</p>
                 </div>
             </div>
-
             <div class="space-y-3">
-                <p class="text-[10px] font-black uppercase text-gray-600 px-3 tracking-widest">Rasmiy Aloqa</p>
-                <a href="https://t.me/NovaNexus_Design" class="glass p-5 rounded-3xl flex justify-between items-center group active:scale-95 transition-all">
+                <a href="https://t.me/NovaNexus_Design" class="glass p-5 rounded-3xl flex justify-between items-center group">
                     <div class="flex items-center gap-4">
                         <div class="w-10 h-10 bg-blue-600/10 rounded-xl flex items-center justify-center text-blue-500"><i class="fab fa-telegram-plane"></i></div>
-                        <p class="font-black text-[11px] uppercase tracking-tighter">Dizayn Kanalimiz</p>
-                    </div>
-                </a>
-                <a href="https://t.me/NovaNexusChat" class="glass p-5 rounded-3xl flex justify-between items-center group active:scale-95 transition-all">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-purple-600/10 rounded-xl flex items-center justify-center text-purple-500"><i class="fas fa-comments"></i></div>
-                        <p class="font-black text-[11px] uppercase tracking-tighter">Nexus Guruhimiz</p>
+                        <p class="font-black text-[11px] uppercase">Dizayn Kanal</p>
                     </div>
                 </a>
             </div>
@@ -76,22 +68,9 @@
         <section id="p-shop" class="page">
             <h2 class="text-2xl font-black uppercase mb-6 italic text-amber-500">Kredit_Do'koni</h2>
             <div class="space-y-4">
-                <div onclick="contactAdmin('100 Kredit To\'plami')" class="glass p-6 rounded-[3rem] border border-amber-500/10 active:scale-95 transition-all">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="bg-amber-500 text-black px-4 py-1 rounded-full text-[8px] font-black uppercase italic">Boshlang'ich</span>
-                        <i class="fas fa-coins text-amber-500"></i>
-                    </div>
-                    <h3 class="text-xl font-black mb-1 tracking-tighter">100 KREDIT</h3>
-                    <p class="text-[10px] text-gray-500 uppercase font-bold italic">Admin bilan kelishiladi</p>
-                </div>
-                
-                <div onclick="contactAdmin('500 Kredit To\'plami')" class="glass p-6 rounded-[3rem] border border-blue-500/10 active:scale-95 transition-all">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="bg-blue-600 text-white px-4 py-1 rounded-full text-[8px] font-black uppercase italic">Professional</span>
-                        <i class="fas fa-crown text-blue-500"></i>
-                    </div>
-                    <h3 class="text-xl font-black mb-1 tracking-tighter">500 KREDIT</h3>
-                    <p class="text-[10px] text-gray-500 uppercase font-bold italic">Admin bilan kelishiladi</p>
+                <div onclick="contactAdmin('Kredit sotib olish')" class="glass p-6 rounded-[3rem] border border-amber-500/10">
+                    <h3 class="text-xl font-black mb-1">KREDIT OLISH</h3>
+                    <p class="text-[10px] text-gray-500 uppercase font-bold italic">Admin bilan narxni kelishish</p>
                 </div>
             </div>
         </section>
@@ -99,13 +78,9 @@
         <section id="p-market" class="page">
             <h2 class="text-2xl font-black uppercase mb-6 italic text-blue-500">Market_</h2>
             <div class="space-y-4">
-                <div onclick="buy(100, 'Premium Logo', 'fa-brush')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center active:scale-95 transition-all border border-white/5">
-                    <div class="flex items-center gap-4"><i class="fas fa-brush text-blue-500"></i><p class="font-black text-[10px] uppercase">Premium Logo</p></div>
-                    <span class="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-black italic">100 CR</span>
-                </div>
-                <div onclick="buy(250, 'Logo + Banner', 'fa-images')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center active:scale-95 transition-all border border-white/5">
-                    <div class="flex items-center gap-4"><i class="fas fa-images text-amber-500"></i><p class="font-black text-[10px] uppercase">Logo + Banner</p></div>
-                    <span class="bg-amber-600 px-4 py-2 rounded-xl text-[10px] font-black italic">250 CR</span>
+                <div onclick="buy(100, 'Premium Logo', 'fa-brush')" class="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5">
+                    <div class="flex items-center gap-4"><i class="fas fa-brush text-blue-500"></i><p class="font-black text-[10px] uppercase italic">Premium Logo</p></div>
+                    <span class="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-black">100 CR</span>
                 </div>
             </div>
         </section>
@@ -117,13 +92,12 @@
 
         <section id="p-admin" class="page">
             <div id="adm-auth" class="glass p-10 rounded-[3rem] text-center mt-10">
-                <i class="fas fa-key text-blue-500 text-3xl mb-6"></i>
-                <input id="adm-pass" type="password" class="w-full bg-white/5 border border-white/10 p-5 rounded-3xl text-center mb-6 outline-none font-black" placeholder="ADMIN PAROLI">
-                <button onclick="loginAdmin()" class="w-full bg-blue-600 py-5 rounded-3xl font-black uppercase text-[10px] tracking-widest">Kirish (Root)</button>
+                <input id="adm-pass" type="password" class="w-full bg-white/5 border border-white/10 p-5 rounded-3xl text-center mb-6 outline-none font-black" placeholder="MASTER PAROL">
+                <button onclick="loginAdmin()" class="w-full bg-blue-600 py-5 rounded-3xl font-black uppercase text-[10px]">ROOT KIRISH</button>
             </div>
-            <div id="adm-main" class="hidden space-y-3 pb-20">
-                <p class="text-[9px] font-black opacity-30 uppercase mb-4 px-2 tracking-widest text-center">Foydalanuvchilar Bazasini Boshqarish</p>
-                <div id="adm-list"></div>
+            <div id="adm-main" class="hidden pb-20">
+                <p class="text-[10px] font-black opacity-30 uppercase text-center mb-6 tracking-widest">FOYDALANUVCHILARNI BOSHQARISH</p>
+                <div id="adm-list" class="space-y-4"></div>
             </div>
         </section>
     </main>
@@ -137,11 +111,10 @@
     </nav>
 
     <script>
-        const ADMIN_TG = "logo_designer21"; 
-
+        const ADMIN_TG = "logo_designer21";
         let state = {
-            db: JSON.parse(localStorage.getItem('nn_final_db')) || [],
-            me: JSON.parse(localStorage.getItem('nn_final_me')) || null
+            db: JSON.parse(localStorage.getItem('nn_elite_db')) || [],
+            me: JSON.parse(localStorage.getItem('nn_elite_me')) || null
         };
 
         function toast(m, c="#3b82f6") {
@@ -160,8 +133,8 @@
         }
 
         function processLogin() {
-            let n = document.getElementById('user-name-in').value.trim();
-            if(!n) return toast("Ismingizni kiriting!", "#ef4444");
+            let n = document.getElementById('user-name-in').value.trim().toUpperCase();
+            if(!n) return toast("Ism kiriting!");
             let u = state.db.find(x => x.name === n);
             if(!u) { u = {name: n, cr: 0.0, items: []}; state.db.push(u); }
             state.me = u; save();
@@ -169,17 +142,11 @@
             renderHome();
         }
 
-        function contactAdmin(pack) {
-            const user = state.me ? state.me.name : "Foydalanuvchi";
-            const text = `Salom! Men Nova Nexus'danman. Ismim: ${user}. Men ${pack} sotib olmoqchiman. Narxini kelishsak bo'ladimi?`;
-            window.location.href = `https://t.me/${ADMIN_TG}?text=${encodeURIComponent(text)}`;
-        }
-
         function buy(p, n, i) {
             if(state.me.cr < p) return toast("Kredit yetarli emas!", "#ef4444");
             state.me.cr -= p;
             state.me.items.push({name: n, icon: i});
-            save(); renderHome(); toast("Xarid amalga oshdi!", "#22c55e");
+            save(); renderHome(); toast("Xarid qilindi!", "#22c55e");
         }
 
         function loginAdmin() {
@@ -187,21 +154,39 @@
                 document.getElementById('adm-auth').classList.add('hidden');
                 document.getElementById('adm-main').classList.remove('hidden');
                 renderAdmList();
-            } else toast("PAROL XATO!", "#ef4444");
+            } else toast("Parol xato!", "#ef4444");
         }
 
+        // ADMIN LIST - MIQDOR YOZISH BILAN
         function renderAdmList() {
             document.getElementById('adm-list').innerHTML = state.db.map((u, i) => `
-                <div class="glass p-5 rounded-[2.5rem] flex justify-between items-center mb-2 border border-white/5">
-                    <span class="font-black text-[10px] uppercase italic text-blue-400">${u.name} (${u.cr} CR)</span>
-                    <button onclick="addCr(${i})" class="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-black active:scale-90 transition-all">+100 CR</button>
+                <div class="glass p-5 rounded-[2.5rem] border border-white/5">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="font-black text-[11px] text-blue-400 uppercase tracking-tighter">${u.name}</span>
+                        <span class="bg-white/5 px-3 py-1 rounded-lg text-[10px] font-bold text-gray-400">${u.cr} CR</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <input id="cr-val-${i}" type="number" class="flex-1 bg-white/5 border border-white/10 rounded-2xl p-3 text-center outline-none font-bold text-xs" placeholder="MIQDOR">
+                        <button onclick="addCr(${i})" class="bg-blue-600 px-6 rounded-2xl text-[10px] font-black uppercase">QO'SHISH</button>
+                    </div>
                 </div>`).join('');
         }
 
         function addCr(idx) {
-            state.db[idx].cr += 100;
-            if(state.db[idx].name === state.me.name) state.me.cr += 100;
-            save(); renderAdmList(); toast("Kredit qo'shildi!");
+            let input = document.getElementById(`cr-val-${idx}`);
+            let val = parseFloat(input.value);
+            if(isNaN(val) || val <= 0) return toast("To'g'ri miqdor yozing!", "#ef4444");
+            
+            state.db[idx].cr += val;
+            if(state.db[idx].name === state.me.name) state.me.cr += val;
+            
+            input.value = "";
+            save(); renderAdmList(); toast(`${val} CR qo'shildi!`, "#22c55e");
+        }
+
+        function contactAdmin(pack) {
+            const text = `Salom! Men Nova Nexus'danman. Ismim: ${state.me.name}. Kredit olmoqchi edim.`;
+            window.location.href = `https://t.me/${ADMIN_TG}?text=${encodeURIComponent(text)}`;
         }
 
         function renderHome() {
@@ -215,7 +200,7 @@
             document.getElementById('bag-list').innerHTML = state.me.items.map(l => `
                 <div class="glass p-5 rounded-[2rem] flex items-center gap-4 border border-white/5">
                     <i class="fas ${l.icon} text-blue-500"></i><p class="font-black text-[10px] uppercase italic">${l.name}</p>
-                </div>`).join('') || "<p class='text-center py-20 opacity-20 text-[10px] font-black italic uppercase text-white'>Hech narsa yo'q</p>";
+                </div>`).join('') || "<p class='text-center py-20 opacity-20 text-[10px] font-black uppercase'>Bo'sh</p>";
         }
 
         function save() {
@@ -223,8 +208,8 @@
                 let i = state.db.findIndex(u => u.name === state.me.name);
                 state.db[i] = state.me;
             }
-            localStorage.setItem('nn_final_db', JSON.stringify(state.db));
-            localStorage.setItem('nn_final_me', JSON.stringify(state.me));
+            localStorage.setItem('nn_elite_db', JSON.stringify(state.db));
+            localStorage.setItem('nn_elite_me', JSON.stringify(state.me));
         }
 
         window.onload = () => {
