@@ -131,3 +131,129 @@
             let n = document.getElementById('login-name').value.trim();
             if(n.length < 2) return toast("Ism juda qisqa!", "#ef4444");
             let u = state.db.find(x => x.name.toLowerCase() === n.toLowerCase());
+            if(!u) { u = {name: n, cr: 10, items: []}; state.db.push(u); }
+            state.me = u; save();
+            document.getElementById('login-scr').classList.add('hidden');
+            checkSystemStatus();
+            renderHome();
+        }
+
+        function checkSystemStatus() {
+            if(state.status === 'offline') {
+                document.getElementById('off-scr').classList.remove('hidden');
+            } else {
+                document.getElementById('off-scr').classList.add('hidden');
+            }
+        }
+
+        function toggleSystemStatus() {
+            state.status = state.status === 'online' ? 'offline' : 'online';
+            localStorage.setItem('nn_status', state.status);
+            updateAdminBtn();
+            toast(`SISTEMA: ${state.status.toUpperCase()}`, state.status === 'online' ? "#22c55e" : "#ef4444");
+        }
+
+        function updateAdminBtn() {
+            const btn = document.getElementById('toggle-btn');
+            if(state.status === 'online') {
+                btn.innerText = "SISTEMANI YOPISH (OFFLINE)";
+                btn.className = "w-full py-4 rounded-2xl font-black uppercase text-[10px] bg-red-600/20 text-red-500 border border-red-500/30";
+            } else {
+                btn.innerText = "SISTEMANI OCHISH (ONLINE)";
+                btn.className = "w-full py-4 rounded-2xl font-black uppercase text-[10px] bg-green-600/20 text-green-500 border border-green-500/30";
+            }
+        }
+
+        function unlockByAdmin() {
+            if(document.getElementById('off-admin-key').value === "0000") {
+                document.getElementById('off-scr').classList.add('hidden');
+                nav('admin', document.querySelector('.fa-user-shield').parentElement);
+            } else toast("Xato parol!", "#ef4444");
+        }
+
+        function checkAdminAccess() {
+            if(document.getElementById('admin-key-main').value === "0000") {
+                document.getElementById('admin-auth-box').classList.add('hidden');
+                document.getElementById('admin-content').classList.remove('hidden');
+                updateAdminBtn();
+                renderAdminUsers();
+            } else toast("Xato!", "#ef4444");
+        }
+
+        function nav(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('p-'+id).classList.add('active');
+            el.classList.add('active');
+            if(id === 'home') renderHome();
+            if(id === 'community') renderLeaderboard();
+            if(id === 'bag') renderBag();
+        }
+
+        function renderHome() {
+            if(!state.me) return;
+            document.getElementById('u-name').innerText = state.me.name + '_';
+            document.getElementById('h-cr').innerText = state.me.cr.toFixed(1);
+            document.getElementById('h-items').innerText = state.me.items.length;
+            document.getElementById('user-cr').innerText = state.me.cr.toFixed(1);
+        }
+
+        function buyNow(name, price, icon) {
+            if(state.me.cr < price) return toast("Mablag' yetarli emas!", "#ef4444");
+            state.me.cr -= price;
+            state.me.items.push({name, icon, date: new Date().toLocaleDateString()});
+            save(); renderHome(); toast("Xarid qilindi!");
+        }
+
+        function renderAdminUsers() {
+            document.getElementById('adm-users-list').innerHTML = state.db.map((u, i) => `
+                <div class="glass p-5 rounded-3xl flex justify-between items-center">
+                    <p class="text-[10px] font-black uppercase">${u.name} <br> <span class="text-blue-500">${u.cr} CR</span></p>
+                    <div class="flex gap-2">
+                        <input id="amt-${i}" type="number" class="w-14 bg-white/5 border border-white/10 rounded-xl px-2 text-[10px] text-white" placeholder="+">
+                        <button onclick="addCr(${i})" class="bg-blue-600 px-3 py-2 rounded-xl text-[8px] font-black uppercase">Add</button>
+                    </div>
+                </div>`).join('');
+        }
+
+        function addCr(idx) {
+            let val = parseFloat(document.getElementById(`amt-${idx}`).value);
+            if(isNaN(val)) return;
+            state.db[idx].cr += val;
+            save(); renderAdminUsers(); toast(`+${val} CR qo'shildi!`, "#22c55e");
+        }
+
+        function renderLeaderboard() {
+            let sorted = [...state.db].sort((a,b) => b.cr - a.cr);
+            document.getElementById('leader-list').innerHTML = sorted.map((u, i) => `
+                <div class="glass p-4 rounded-2xl flex justify-between items-center">
+                    <p class="font-black text-xs uppercase"><span class="text-gray-600">#${i+1}</span> ${u.name}</p>
+                    <p class="font-black text-blue-500">${u.cr.toFixed(0)}</p>
+                </div>`).join('');
+        }
+
+        function renderBag() {
+            document.getElementById('bag-list').innerHTML = state.me.items.map(l => `
+                <div class="glass p-4 rounded-2xl flex justify-between items-center">
+                    <div class="flex items-center gap-3"><i class="fas ${l.icon} text-blue-500"></i><p class="font-black text-[10px] uppercase">${l.name}</p></div>
+                    <span class="text-[8px] text-gray-500 font-bold">${l.date}</span>
+                </div>`).join('') || "<p class='text-center py-20 opacity-20'>BO'SH</p>";
+        }
+
+        function save() {
+            if(state.me) { let idx = state.db.findIndex(u => u.name === state.me.name); if(idx !== -1) state.db[idx] = state.me; }
+            localStorage.setItem('nn_db_v36', JSON.stringify(state.db));
+            localStorage.setItem('nn_me_v36', JSON.stringify(state.me));
+        }
+
+        window.onload = () => { 
+            if(!state.me) {
+                document.getElementById('login-scr').classList.remove('hidden');
+            } else {
+                checkSystemStatus();
+                renderHome(); 
+            }
+        };
+    </script>
+</body>
+</html>
